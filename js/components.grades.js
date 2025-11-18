@@ -1,5 +1,78 @@
+function GradesHistoryModal({ subject, history, onClose, onAddGrade }) {
+  if (!subject) return null;
+
+  const formatDate = (iso) => {
+    if (!iso) return "";
+    const parts = iso.split("-");
+    if (parts.length !== 3) return iso;
+    return `${parts[2]}.${parts[1]}.${parts[0]}`;
+  };
+
+  return (
+    <div className="history-modal-backdrop" onClick={onClose}>
+      <div
+        className="history-modal"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="history-modal-header">
+          <div>
+            <h3>История оценок</h3>
+            <div className="history-modal-subtitle">{subject.name}</div>
+          </div>
+          <button
+            className="history-modal-close"
+            type="button"
+            onClick={onClose}
+          >
+            ✕
+          </button>
+        </div>
+
+        {history.length === 0 && (
+          <div className="history-modal-empty">
+            Пока нет оценок по этому предмету.
+          </div>
+        )}
+
+        {history.length > 0 && (
+          <div className="history-modal-table">
+            <div className="history-modal-row history-modal-row--head">
+              <div>Дата</div>
+              <div>Оценка</div>
+            </div>
+            {history.map((g) => (
+              <div
+                className="history-modal-row"
+                key={g.id || `${g.date}-${g.value}`}
+              >
+                <div className="history-modal-date">
+                  {formatDate(g.date)}
+                </div>
+                <div className="history-modal-value">
+                  {g.value}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="history-modal-footer">
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={onAddGrade}
+          >
+            Добавить / изменить оценку
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function GradesBlock({ student, subjects, grades, onEditGrade }) {
   const [selectedSubjectId, setSelectedSubjectId] = React.useState(null);
+  const [isHistoryOpen, setIsHistoryOpen] = React.useState(false);
 
   const performanceBySubject = React.useMemo(() => {
     if (!student) return [];
@@ -30,8 +103,9 @@ function GradesBlock({ student, subjects, grades, onEditGrade }) {
 
   if (!student) return null;
 
-  const handleRowClick = (subjectId) => {
-    setSelectedSubjectId((prev) => (prev === subjectId ? null : subjectId));
+  const openHistory = (subjectId) => {
+    setSelectedSubjectId(subjectId);
+    setIsHistoryOpen(true);
   };
 
   const handleAddGrade = () => {
@@ -39,19 +113,12 @@ function GradesBlock({ student, subjects, grades, onEditGrade }) {
     onEditGrade(student.id, selectedSubjectId);
   };
 
-  const formatDate = (iso) => {
-    if (!iso) return "";
-    const parts = iso.split("-");
-    if (parts.length !== 3) return iso;
-    return `${parts[2]}.${parts[1]}.${parts[0]}`;
-  };
-
   return (
     <section className="details-section">
       <div className="details-section-header">
         <h3>Успеваемость по предметам</h3>
         <p className="details-section-subtitle">
-          Клик по строке предмета — посмотреть все оценки.
+          Клик по строке предмета — открыть историю оценок.
         </p>
       </div>
       <div className="grades-grid">
@@ -61,7 +128,7 @@ function GradesBlock({ student, subjects, grades, onEditGrade }) {
           <React.Fragment key={subject.id}>
             <button
               className="grades-grid-cell grades-grid-subject grades-grid-subject-btn"
-              onClick={() => handleRowClick(subject.id)}
+              onClick={() => openHistory(subject.id)}
             >
               {subject.name}
             </button>
@@ -70,7 +137,7 @@ function GradesBlock({ student, subjects, grades, onEditGrade }) {
                 "grades-grid-cell grades-grid-grade" +
                 (lastGrade ? "" : " grades-grid-grade--empty")
               }
-              onClick={() => handleRowClick(subject.id)}
+              onClick={() => openHistory(subject.id)}
             >
               {lastGrade ? lastGrade.value : "—"}
             </button>
@@ -78,46 +145,13 @@ function GradesBlock({ student, subjects, grades, onEditGrade }) {
         ))}
       </div>
 
-      {selectedSubject && (
-        <div className="grades-history">
-          <div className="grades-history-title">
-            История оценок: {selectedSubject.name}
-          </div>
-
-          {history.length === 0 && (
-            <div className="grades-history-empty">
-              Пока нет оценок по этому предмету.
-            </div>
-          )}
-
-          {history.length > 0 && (
-            <div className="grades-history-list">
-              {history.map((g) => (
-                <div
-                  className="grades-history-row"
-                  key={g.id || `${g.date}-${g.value}`}
-                >
-                  <span className="grades-history-date">
-                    {formatDate(g.date)}
-                  </span>
-                  <span className="grades-history-value">
-                    {g.value}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-
-          <div className="grades-history-actions">
-            <button
-              className="btn btn-primary"
-              type="button"
-              onClick={handleAddGrade}
-            >
-              Добавить / изменить оценку
-            </button>
-          </div>
-        </div>
+      {isHistoryOpen && selectedSubject && (
+        <GradesHistoryModal
+          subject={selectedSubject}
+          history={history}
+          onClose={() => setIsHistoryOpen(false)}
+          onAddGrade={handleAddGrade}
+        />
       )}
     </section>
   );
