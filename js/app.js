@@ -1,6 +1,3 @@
-// =============================
-// ЛОГИКА МАКЕТА
-// =============================
 
 const data = window.__DATA__;
 const students = data.students;
