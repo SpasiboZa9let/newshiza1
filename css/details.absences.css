@@ -1,0 +1,34 @@
+/* Пропуски и опоздания */
+
+.absences-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.absence-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.absence-date {
+  color: #555;
+}
+
+.absence-type {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+}
+
+.absence-type--absence {
+  background: #ffe4e4;
+  color: #b30000;
+}
+
+.absence-type--late {
+  background: #fff4cc;
+  color: #996600;
+}
