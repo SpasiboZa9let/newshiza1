@@ -129,6 +129,27 @@ function JournalApp({ state, setState, auth, onLogout }) {
     }));
   };
 
+  const handleQuickAddGrade = (date, subjectId, studentId, value) => {
+    if (!isAdminMode) {
+      alert("Выставлять оценки может только учитель.");
+      return;
+    }
+
+    updateState((prev) => ({
+      ...prev,
+      grades: [
+        ...prev.grades,
+        {
+          id: Date.now() + Math.random(),
+          studentId,
+          subjectId,
+          value,
+          date
+        }
+      ]
+    }));
+  };
+
   const handleAddNote = (studentId) => {
     if (!isAdminMode) {
       alert("Добавлять заметки может только учитель.");
@@ -284,6 +305,14 @@ function JournalApp({ state, setState, auth, onLogout }) {
         </aside>
 
         <main className="details">
+          {isAdminMode && (
+            <GradeEntryPanel
+              students={students}
+              subjects={subjects}
+              onAddGrade={handleQuickAddGrade}
+            />
+          )}
+
           <StudentDetails
             student={selectedStudent}
             subjects={subjects}
