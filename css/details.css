@@ -208,3 +208,55 @@
   background: #fff4cc;
   color: #996600;
 }
+
+.grade-entry {
+  margin-bottom: 16px;
+  border: 1px dashed #d0d0d0;
+  background: #fafcff;
+}
+
+.grade-entry-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.grade-entry-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.grade-entry-students {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 260px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.grade-entry-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+.grade-entry-name {
+  flex: 1;
+  padding-right: 8px;
+}
+
+.grade-entry-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.grade-entry-btn {
+  min-width: 32px;
+  padding: 2px 0;
+  font-size: 13px;
+}
