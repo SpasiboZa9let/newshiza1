@@ -1,70 +1,4 @@
-const { useState, useMemo, useEffect } = React;
-
-// Ключ для localStorage
-const STORAGE_KEY = "class_journal_state_v1";
-
-// Базовые данные из data.js
-const BASE_DATA = window.__DATA__ || {
-  students: [],
-  subjects: [],
-  grades: [],
-  debts: [],
-  notes: []
-};
-
-function loadInitialState() {
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return BASE_DATA;
-    const parsed = JSON.parse(raw);
-    return {
-      students: parsed.students || BASE_DATA.students,
-      subjects: parsed.subjects || BASE_DATA.subjects,
-      grades: parsed.grades || BASE_DATA.grades,
-      debts: parsed.debts || BASE_DATA.debts,
-      notes: parsed.notes || BASE_DATA.notes
-    };
-  } catch (e) {
-    console.error("Ошибка чтения localStorage", e);
-    return BASE_DATA;
-  }
-}
-
-function saveState(state) {
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  } catch (e) {
-    console.error("Ошибка записи localStorage", e);
-  }
-}
-
-function getInitials(fullName) {
-  const parts = fullName.split(" ").filter(Boolean);
-  if (parts.length === 0) return "?";
-  if (parts.length === 1) return parts[0][0].toUpperCase();
-  return (parts[0][0] + parts[1][0]).toUpperCase();
-}
-
-function getLastGrade(grades, studentId, subjectId) {
-  const list = grades.filter(
-    (g) => g.studentId === studentId && g.subjectId === subjectId
-  );
-  if (list.length === 0) return null;
-  return list[list.length - 1];
-}
-
-function statusLabel(status) {
-  switch (status) {
-    case "open":
-      return "Открыт";
-    case "in_progress":
-      return "В работе";
-    case "closed":
-      return "Закрыт";
-    default:
-      return status;
-  }
-}
+const { useState, useEffect, useMemo } = React;
 
 function App() {
   const [state, setState] = useState(loadInitialState);
@@ -72,9 +6,6 @@ function App() {
   const [search, setSearch] = useState("");
   const [onlyWithDebts, setOnlyWithDebts] = useState(false);
   const [subjectFilter, setSubjectFilter] = useState("all");
-
-  // новый стейт: какой предмет выбран для истории оценок
-  const [historySubjectId, setHistorySubjectId] = useState(null);
 
   const { students, subjects, grades, debts, notes } = state;
 
@@ -89,16 +20,10 @@ function App() {
     });
   };
 
-  const handleSelectStudent = (id) => {
-    setSelectedStudentId(id);
-    setHistorySubjectId(null); // сбрасываем выбранный предмет при смене ученика
-  };
-
   const handleEditGrade = (studentId, subjectId) => {
     const current = getLastGrade(grades, studentId, subjectId);
     const defaultValue = current ? String(current.value) : "";
     const input = window.prompt("Новая оценка (2–5):", defaultValue);
-
     if (input === null) return;
 
     const num = parseInt(input, 10);
@@ -106,20 +31,13 @@ function App() {
       alert("Допустимые оценки: 2, 3, 4, 5.");
       return;
     }
-
     const today = new Date().toISOString().slice(0, 10);
 
     updateState((prev) => ({
       ...prev,
       grades: [
         ...prev.grades,
-        {
-          id: Date.now(),
-          studentId,
-          subjectId,
-          value: num,
-          date: today
-        }
+        { id: Date.now(), studentId, subjectId, value: num, date: today }
       ]
     }));
   };
@@ -132,12 +50,7 @@ function App() {
       ...prev,
       notes: [
         ...prev.notes,
-        {
-          id: Date.now(),
-          studentId,
-          type: "note",
-          text: text.trim()
-        }
+        { id: Date.now(), studentId, type: "note", text: text.trim() }
       ]
     }));
   };
@@ -158,8 +71,8 @@ function App() {
 
   const filteredStudents = useMemo(() => {
     let list = [...students];
-
     const s = search.trim().toLowerCase();
+
     if (s) {
       list = list.filter((st) =>
         st.fullName.toLowerCase().includes(s)
@@ -188,49 +101,6 @@ function App() {
     [students, selectedStudentId]
   );
 
-  const selectedStudentDebts = useMemo(() => {
-    if (!selectedStudent) return [];
-    return debts.filter((d) => d.studentId === selectedStudent.id);
-  }, [debts, selectedStudent]);
-
-  const selectedStudentNotes = useMemo(() => {
-    if (!selectedStudent) return [];
-    return notes.filter((n) => n.studentId === selectedStudent.id);
-  }, [notes, selectedStudent]);
-
-  const performanceBySubject = useMemo(() => {
-    if (!selectedStudent) return [];
-    return subjects.map((subj) => {
-      const last = getLastGrade(grades, selectedStudent.id, subj.id);
-      return {
-        subject: subj,
-        lastGrade: last
-      };
-    });
-  }, [subjects, grades, selectedStudent]);
-
-  const selectedSubjectForHistory = useMemo(
-    () => subjects.find((s) => s.id === historySubjectId) || null,
-    [subjects, historySubjectId]
-  );
-
-  const selectedHistoryGrades = useMemo(() => {
-    if (!selectedStudent || !selectedSubjectForHistory) return [];
-    return grades
-      .filter(
-        (g) =>
-          g.studentId === selectedStudent.id &&
-          g.subjectId === selectedSubjectForHistory.id
-      )
-      .slice()
-      .sort((a, b) => {
-        // по дате, старые сверху
-        const da = a.date || "";
-        const db = b.date || "";
-        return da.localeCompare(db);
-      });
-  }, [grades, selectedStudent, selectedSubjectForHistory]);
-
   return (
     <div className="app">
       <header className="app-header">
@@ -242,235 +112,34 @@ function App() {
 
       <div className="app-layout">
         <aside className="sidebar">
-          <div className="filters-card">
-            <input
-              type="text"
-              className="input"
-              placeholder="Поиск по фамилии..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-
-            <label className="checkbox-row">
-              <input
-                type="checkbox"
-                checked={onlyWithDebts}
-                onChange={(e) => setOnlyWithDebts(e.target.checked)}
-              />
-              <span>Показать только с долгами</span>
-            </label>
-
-            <select
-              className="input"
-              value={subjectFilter}
-              onChange={(e) => setSubjectFilter(e.target.value)}
-            >
-              <option value="all">Все предметы</option>
-              {subjects.map((subj) => (
-                <option key={subj.id} value={subj.id}>
-                  {subj.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="students-list">
-            {filteredStudents.length === 0 && (
-              <div className="empty">Никого не найдено</div>
-            )}
-
-            {filteredStudents.map((st) => {
-              const hasDebts = debts.some((d) => d.studentId === st.id);
-              const active = st.id === selectedStudentId;
-
-              return (
-                <button
-                  key={st.id}
-                  className={
-                    "student-card" + (active ? " student-card--active" : "")
-                  }
-                  onClick={() => handleSelectStudent(st.id)}
-                >
-                  <div className="student-avatar">
-                    <span>{getInitials(st.fullName)}</span>
-                  </div>
-                  <div className="student-info">
-                    <div className="student-name">{st.fullName}</div>
-                    <div className="student-meta">
-                      <span>{st.classLabel || "Класс не указан"}</span>
-                      {hasDebts && (
-                        <span className="student-badge">Есть долги</span>
-                      )}
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
+          <FiltersPanel
+            subjects={subjects}
+            search={search}
+            onSearchChange={setSearch}
+            onlyWithDebts={onlyWithDebts}
+            onToggleDebts={setOnlyWithDebts}
+            subjectFilter={subjectFilter}
+            onSubjectFilterChange={setSubjectFilter}
+          />
+          <StudentsList
+            students={filteredStudents}
+            debts={debts}
+            selectedStudentId={selectedStudentId}
+            onSelect={setSelectedStudentId}
+          />
         </aside>
 
         <main className="details">
-          {!selectedStudent && (
-            <div className="placeholder">
-              Выбери ученика слева, чтобы посмотреть оценки, долги и заметки.
-            </div>
-          )}
-
-          {selectedStudent && (
-            <div className="details-content">
-              <div className="details-header">
-                <div className="details-avatar">
-                  <span>{getInitials(selectedStudent.fullName)}</span>
-                </div>
-                <div>
-                  <h2>{selectedStudent.fullName}</h2>
-                  <p className="details-meta">
-                    Класс: {selectedStudent.classLabel || "не указан"}
-                  </p>
-                </div>
-              </div>
-
-              <section className="details-section">
-                <div className="details-section-header">
-                  <h3>Успеваемость по предметам</h3>
-                  <p className="details-section-subtitle">
-                    Клик по предмету — показать историю. Клик по оценке — изменить
-                    последнюю.
-                  </p>
-                </div>
-                <div className="grades-grid">
-                  <div className="grades-grid-header">Предмет</div>
-                  <div className="grades-grid-header">Последняя оценка</div>
-                  {performanceBySubject.map(({ subject, lastGrade }) => (
-                    <React.Fragment key={subject.id}>
-                      <button
-                        type="button"
-                        className="grades-grid-cell grades-grid-subject"
-                        onClick={() =>
-                          setHistorySubjectId(
-                            historySubjectId === subject.id ? null : subject.id
-                          )
-                        }
-                      >
-                        {subject.name}
-                      </button>
-                      <button
-                        className={
-                          "grades-grid-cell grades-grid-grade" +
-                          (lastGrade ? "" : " grades-grid-grade--empty")
-                        }
-                        onClick={() =>
-                          handleEditGrade(selectedStudent.id, subject.id)
-                        }
-                      >
-                        {lastGrade ? lastGrade.value : "—"}
-                      </button>
-                    </React.Fragment>
-                  ))}
-                </div>
-
-                {selectedSubjectForHistory && (
-                  <div className="grades-history">
-                    <div className="grades-history-title">
-                      История оценок по предмету:{" "}
-                      <strong>{selectedSubjectForHistory.name}</strong>
-                    </div>
-                    {selectedHistoryGrades.length === 0 && (
-                      <div className="empty">
-                        Пока нет оценок по этому предмету.
-                      </div>
-                    )}
-                    {selectedHistoryGrades.length > 0 && (
-                      <div className="grades-history-list">
-                        {selectedHistoryGrades.map((g) => (
-                          <div className="grades-history-item" key={g.id}>
-                            <div className="grades-history-date">
-                              {g.date || "дата не указана"}
-                            </div>
-                            <div className="grades-history-value">{g.value}</div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </section>
-
-              <section className="details-section">
-                <div className="details-section-header">
-                  <h3>Долги</h3>
-                  <p className="details-section-subtitle">
-                    Клик по статусу — переключить (открыт → в работе → закрыт).
-                  </p>
-                </div>
-
-                {selectedStudentDebts.length === 0 && (
-                  <div className="empty">У ученика нет задолженностей.</div>
-                )}
-
-                {selectedStudentDebts.length > 0 && (
-                  <div className="debts-list">
-                    {selectedStudentDebts.map((d) => {
-                      const subj = subjects.find((s) => s.id === d.subjectId);
-                      return (
-                        <div className="debts-item" key={d.id}>
-                          <div className="debts-main">
-                            <div className="debts-subject">
-                              {subj ? subj.name : "Предмет"}
-                            </div>
-                            <div className="debts-desc">{d.desc}</div>
-                          </div>
-                          <button
-                            className={
-                              "debts-status debts-status--" + (d.status || "open")
-                            }
-                            onClick={() => handleChangeDebtStatus(d.id)}
-                          >
-                            {statusLabel(d.status || "open")}
-                          </button>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </section>
-
-              <section className="details-section">
-                <div className="details-section-header">
-                  <h3>Заметки</h3>
-                  <button
-                    className="btn"
-                    onClick={() => handleAddNote(selectedStudent.id)}
-                  >
-                    + Добавить заметку
-                  </button>
-                </div>
-
-                {selectedStudentNotes.length === 0 && (
-                  <div className="empty">
-                    Пока нет заметок по этому ученику.
-                  </div>
-                )}
-
-                {selectedStudentNotes.length > 0 && (
-                  <div className="notes-list">
-                    {selectedStudentNotes.map((n) => (
-                      <div className="note-item" key={n.id}>
-                        <div className="note-type">
-                          {n.type === "behavior"
-                            ? "Поведение"
-                            : n.type === "academic"
-                            ? "Учёба"
-                            : "Заметка"}
-                        </div>
-                        <div className="note-text">{n.text}</div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </section>
-            </div>
-          )}
+          <StudentDetails
+            student={selectedStudent}
+            subjects={subjects}
+            grades={grades}
+            debts={debts}
+            notes={notes}
+            onEditGrade={handleEditGrade}
+            onChangeDebtStatus={handleChangeDebtStatus}
+            onAddNote={handleAddNote}
+          />
         </main>
       </div>
     </div>
