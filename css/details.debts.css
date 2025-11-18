@@ -1,0 +1,58 @@
+/* Долги */
+
+.debts-list {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.debts-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+}
+
+.debts-main {
+  flex: 1;
+}
+
+.debts-subject {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.debts-desc {
+  font-size: 13px;
+  color: #555;
+}
+
+.debts-status {
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.debts-status--open {
+  background: #ffe4e4;
+  color: #b30000;
+}
+
+.debts-status--in_progress {
+  background: #fff4ce;
+  color: #947100;
+}
+
+.debts-status--closed {
+  background: #dff7df;
+  color: #1b6e1b;
+}
