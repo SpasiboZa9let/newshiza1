@@ -24,24 +24,64 @@ window.__DATA__ = {
     { id: 10, fullName: "Ласкина Алина", classLabel: "8А" }
   ],
 
+  // ВАЖНО: используем value, а не grade + добавляем id
   grades: [
-    { studentId: 1, subjectId: 1, grade: 4, date: "2025-11-10" },
-    { studentId: 1, subjectId: 3, grade: 5, date: "2025-11-11" },
-    { studentId: 2, subjectId: 1, grade: 2, date: "2025-11-10" },
-    { studentId: 2, subjectId: 2, grade: 2, date: "2025-11-11" },
-    { studentId: 3, subjectId: 4, grade: 3, date: "2025-11-07" },
-    { studentId: 7, subjectId: 1, grade: 5, date: "2025-11-10" }
+    { id: 1, studentId: 1, subjectId: 1, value: 4, date: "2025-11-10" },
+    { id: 2, studentId: 1, subjectId: 3, value: 5, date: "2025-11-11" },
+
+    { id: 3, studentId: 2, subjectId: 1, value: 2, date: "2025-11-10" },
+    { id: 4, studentId: 2, subjectId: 2, value: 2, date: "2025-11-11" },
+
+    { id: 5, studentId: 3, subjectId: 4, value: 3, date: "2025-11-07" },
+
+    { id: 6, studentId: 7, subjectId: 1, value: 5, date: "2025-11-10" }
   ],
 
+  // Долги: добавлены id, чтобы статус можно было переключать
   debts: [
-    { studentId: 1, subjectId: 1, desc: "Домашнее задание №5", status: "open" },
-    { studentId: 2, subjectId: 2, desc: "Словарный диктант", status: "open" },
-    { studentId: 8, subjectId: 3, desc: "Пересказ", status: "open" },
-    { studentId: 10, subjectId: 1, desc: "Параграф 7", status: "in_progress" }
+    {
+      id: 1,
+      studentId: 1,
+      subjectId: 1,
+      desc: "Домашнее задание №5",
+      status: "open"
+    },
+    {
+      id: 2,
+      studentId: 2,
+      subjectId: 2,
+      desc: "Словарный диктант",
+      status: "open"
+    },
+    {
+      id: 3,
+      studentId: 8,
+      subjectId: 3,
+      desc: "Пересказ",
+      status: "open"
+    },
+    {
+      id: 4,
+      studentId: 10,
+      subjectId: 1,
+      desc: "Параграф 7",
+      status: "in_progress"
+    }
   ],
 
+  // Заметки: тоже с id
   notes: [
-    { studentId: 8, type: "behavior", text: "Часто отвлекается." },
-    { studentId: 7, type: "academic", text: "Нужна консультация перед ОГЭ." }
+    {
+      id: 1,
+      studentId: 8,
+      type: "behavior",
+      text: "Часто отвлекается."
+    },
+    {
+      id: 2,
+      studentId: 7,
+      type: "academic",
+      text: "Нужна консультация перед ОГЭ."
+    }
   ]
 };
