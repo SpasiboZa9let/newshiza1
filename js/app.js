@@ -1,31 +1,31 @@
 const { useState, useEffect, useMemo } = React;
 
-/**
- * Условная "таблица пользователей".
- * Здесь:
- * - один учитель (admin)
- * - несколько учеников (student), привязанных к studentId
- *
- * Логины/пароли можешь поменять как хочешь.
- */
+// "Аккаунты": учитель + ученики
 const ACCOUNTS = [
   { login: "teacher", password: "1234", mode: "admin", studentId: null },
 
-  { login: "zakar", password: "1111", mode: "student", studentId: 1 },
-  { login: "zakhar", password: "1111", mode: "student", studentId: 2 },
-  { login: "konst", password: "1111", mode: "student", studentId: 3 },
-  { login: "kuzin", password: "1111", mode: "student", studentId: 4 },
-  { login: "podor", password: "1111", mode: "student", studentId: 5 },
-  { login: "salam", password: "1111", mode: "student", studentId: 6 },
-  { login: "fomin", password: "1111", mode: "student", studentId: 7 },
-  { login: "brod",  password: "1111", mode: "student", studentId: 8 },
-  { login: "gol",   password: "1111", mode: "student", studentId: 9 },
-  { login: "lask",  password: "1111", mode: "student", studentId: 10 }
+  { login: "brod",  password: "1111", mode: "student", studentId: 1 },
+  { login: "gol",   password: "1111", mode: "student", studentId: 2 },
+  { login: "efr",   password: "1111", mode: "student", studentId: 3 },
+  { login: "zakar", password: "1111", mode: "student", studentId: 4 },
+  { login: "zakhar",password: "1111", mode: "student", studentId: 5 },
+  { login: "zol",   password: "1111", mode: "student", studentId: 6 },
+  { login: "konst", password: "1111", mode: "student", studentId: 7 },
+  { login: "kost",  password: "1111", mode: "student", studentId: 8 },
+  { login: "kuzin", password: "1111", mode: "student", studentId: 9 },
+  { login: "evel",  password: "1111", mode: "student", studentId: 10 },
+  { login: "lask",  password: "1111", mode: "student", studentId: 11 },
+  { login: "misev", password: "1111", mode: "student", studentId: 12 },
+  { login: "ovch",  password: "1111", mode: "student", studentId: 13 },
+  { login: "orif",  password: "1111", mode: "student", studentId: 14 },
+  { login: "podor", password: "1111", mode: "student", studentId: 15 },
+  { login: "razin", password: "1111", mode: "student", studentId: 16 },
+  { login: "salam", password: "1111", mode: "student", studentId: 17 },
+  { login: "sin",   password: "1111", mode: "student", studentId: 18 },
+  { login: "tymar", password: "1111", mode: "student", studentId: 19 },
+  { login: "fomin", password: "1111", mode: "student", studentId: 20 }
 ];
 
-/**
- * Стартовый экран логина
- */
 function LoginScreen({ onLogin }) {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
@@ -54,12 +54,16 @@ function LoginScreen({ onLogin }) {
           <input
             type="password"
             className="input"
-            placeholder="Пароль"
+            placeholder="Парпароль"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          <button type="submit" className="btn btn-primary" style={{ width: "100%" }}>
+          <button
+            type="submit"
+            className="btn btn-primary"
+            style={{ width: "100%" }}
+          >
             Войти
           </button>
         </form>
@@ -73,9 +77,6 @@ function LoginScreen({ onLogin }) {
   );
 }
 
-/**
- * Основное приложение журнала (то, что у тебя было, плюс учёт auth)
- */
 function JournalApp({ state, setState, auth, onLogout }) {
   const [selectedStudentId, setSelectedStudentId] = useState(
     auth.mode === "student" ? auth.studentId : null
@@ -84,7 +85,8 @@ function JournalApp({ state, setState, auth, onLogout }) {
   const [onlyWithDebts, setOnlyWithDebts] = useState(false);
   const [subjectFilter, setSubjectFilter] = useState("all");
 
-  const { students, subjects, grades, debts, notes } = state;
+  const { students, grades, debts, notes, absences } = state;
+  const subjects = SUBJECTS;
 
   useEffect(() => {
     saveState(state);
@@ -167,7 +169,6 @@ function JournalApp({ state, setState, auth, onLogout }) {
   const filteredStudents = useMemo(() => {
     let list = [...students];
 
-    // В режиме ученика он видит только себя
     if (isStudentMode && auth.studentId) {
       return list.filter((st) => st.id === auth.studentId);
     }
@@ -264,9 +265,6 @@ function JournalApp({ state, setState, auth, onLogout }) {
   );
 }
 
-/**
- * Обёртка над приложением: здесь логин / выбор режима
- */
 function AppWrapper() {
   const [state, setState] = useState(loadInitialState);
   const [auth, setAuth] = useState(null);
