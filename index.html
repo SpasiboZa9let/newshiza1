@@ -2,78 +2,25 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <title>Классный журнал — макет</title>
+  <title>Классный журнал — React макет</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Стили (файл добавим следующим шагом) -->
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
-  <div class="app">
-    <header class="app-header">
-      <div class="app-header-left">
-        <h1 class="app-title">8А — Галерея учеников</h1>
-        <p class="app-subtitle">Макет электронного журнала в стиле Телеграм-мини-аппа</p>
-      </div>
-      <div class="app-header-right">
-        <button class="btn btn-primary" id="open-common-chat">
-          Общий чат
-        </button>
-      </div>
-    </header>
+  <div id="root"></div>
 
-    <main class="layout">
-      <!-- Левая панель: галерея учеников -->
-      <section class="panel panel-left">
-        <div class="panel-header">
-          <h2>Ученики</h2>
-        </div>
+  <!-- React и ReactDOM из CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
 
-        <div class="filters">
-          <input
-            type="text"
-            id="search-input"
-            class="input"
-            placeholder="Поиск по фамилии..."
-          />
+  <!-- Babel для JSX в браузере (да, не идеально, но для макета хватает) -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-          <div class="filters-row">
-            <label class="checkbox-label">
-              <input type="checkbox" id="filter-debts" />
-              <span>Только с долгами</span>
-            </label>
-
-            <select id="subject-filter" class="select">
-              <option value="">Все предметы</option>
-              <!-- Опции предметов добавим из JS позже -->
-            </select>
-          </div>
-        </div>
-
-        <div id="students-list" class="students-grid">
-          <!-- Карточки учеников будут рендериться тут JS-ом -->
-        </div>
-      </section>
-
-      <!-- Правая панель: карточка выбранного ученика -->
-      <section class="panel panel-right" id="student-details">
-        <div class="panel-placeholder">
-          <h2>Выбери ученика из списка</h2>
-          <p>
-            Слева будет галерея с карточками, а здесь —
-            оценки, долги и заметки по выбранному ученику.
-          </p>
-          <p>
-            Сейчас это просто макет с тестовыми данными
-            (без базы и Телеграма).
-          </p>
-        </div>
-      </section>
-    </main>
-  </div>
-
-  <!-- Скрипты (файлы создадим позже) -->
+  <!-- Наши данные (как и раньше) -->
   <script src="js/data.js"></script>
-  <script src="js/app.js"></script>
+
+  <!-- Наш React-код (создадим файл app.jsx следующим шагом) -->
+  <script type="text/babel" src="js/app.jsx"></script>
 </body>
 </html>
