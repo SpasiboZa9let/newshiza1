@@ -57,3 +57,28 @@ function statusLabel(status) {
     default: return status;
   }
 }
+
+function getAccessContext() {
+  const params = new URLSearchParams(window.location.search);
+
+  const ADMIN_SECRET = "teacher-2025"; // поменяй на свой
+
+  const adminParam = params.get("admin");
+  const keyParam = params.get("key");
+
+  // Админ
+  if (adminParam && adminParam === ADMIN_SECRET) {
+    return { mode: "admin", studentId: null };
+  }
+
+  // Ученик по ключу
+  if (keyParam) {
+    const st = BASE_DATA.students.find((s) => s.accessKey === keyParam);
+    if (st) {
+      return { mode: "student", studentId: st.id };
+    }
+  }
+
+  // Без параметров / неизвестный ключ — публичный режим
+  return { mode: "public", studentId: null };
+}
