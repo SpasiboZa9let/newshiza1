@@ -1,25 +1,13 @@
+const { useState, useMemo } = React;
 
-const data = window.__DATA__;
-const students = data.students;
-const subjects = data.subjects;
-const grades = data.grades;
-const debts = data.debts;
-const notes = data.notes;
-
-// ЭЛЕМЕНТЫ
-const studentsListEl = document.getElementById("students-list");
-const studentDetailsEl = document.getElementById("student-details");
-const searchInputEl = document.getElementById("search-input");
-const filterDebtsEl = document.getElementById("filter-debts");
-const subjectFilterEl = document.getElementById("subject-filter");
-const commonChatBtn = document.getElementById("open-common-chat");
-
-// ТЕКУЩЕЕ СОСТОЯНИЕ
-let selectedStudentId = null;
-
-// =============================
-// ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
-// =============================
+// Забираем данные из data.js
+const DATA = window.__DATA__ || {
+  students: [],
+  subjects: [],
+  grades: [],
+  debts: [],
+  notes: []
+};
 
 function getInitials(fullName) {
   const parts = fullName.split(" ").filter(Boolean);
@@ -28,308 +16,349 @@ function getInitials(fullName) {
   return (parts[0][0] + parts[1][0]).toUpperCase();
 }
 
-function getStudentGrades(studentId) {
-  return grades.filter((g) => g.studentId === studentId);
-}
-
-function getStudentDebts(studentId) {
-  return debts.filter((d) => d.studentId === studentId);
-}
-
-function getStudentNotes(studentId) {
-  return notes.filter((n) => n.studentId === studentId);
-}
-
-function getSubjectById(id) {
+function getSubjectById(subjects, id) {
   return subjects.find((s) => s.id === id);
 }
 
-function calcAverageGrade(studentId) {
-  const g = getStudentGrades(studentId);
+function calcAverageGrade(grades, studentId) {
+  const g = grades.filter((gr) => gr.studentId === studentId);
   if (!g.length) return null;
   const sum = g.reduce((acc, item) => acc + item.grade, 0);
   return (sum / g.length).toFixed(1);
 }
 
-// =============================
-// РЕНДЕР ФИЛЬТРОВ
-// =============================
+function App() {
+  const { students, subjects, grades, debts, notes } = DATA;
 
-function renderSubjectFilterOptions() {
-  subjects.forEach((subj) => {
-    const opt = document.createElement("option");
-    opt.value = String(subj.id);
-    opt.textContent = subj.name;
-    subjectFilterEl.appendChild(opt);
-  });
-}
+  const [search, setSearch] = useState("");
+  const [onlyWithDebts, setOnlyWithDebts] = useState(false);
+  const [subjectFilter, setSubjectFilter] = useState("");
+  const [selectedStudentId, setSelectedStudentId] = useState(null);
 
-// =============================
-// РЕНДЕР СПИСКА УЧЕНИКОВ
-// =============================
+  const filteredStudents = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    const subjectId = subjectFilter ? Number(subjectFilter) : null;
 
-function applyFilters() {
-  const query = (searchInputEl.value || "").trim().toLowerCase();
-  const onlyWithDebts = filterDebtsEl.checked;
-  const subjectFilter = subjectFilterEl.value ? Number(subjectFilterEl.value) : null;
+    let list = [...students];
 
-  let list = [...students];
+    if (query) {
+      list = list.filter((s) => s.fullName.toLowerCase().includes(query));
+    }
 
-  if (query) {
-    list = list.filter((s) => s.fullName.toLowerCase().includes(query));
-  }
+    if (onlyWithDebts) {
+      list = list.filter((s) => {
+        const studentDebts = debts.filter((d) => d.studentId === s.id);
+        return studentDebts.some(
+          (d) => d.status === "open" || d.status === "in_progress"
+        );
+      });
+    }
 
-  if (onlyWithDebts) {
-    list = list.filter((s) => {
-      const studentDebts = getStudentDebts(s.id);
-      return studentDebts.some((d) => d.status === "open" || d.status === "in_progress");
-    });
-  }
+    if (subjectId) {
+      list = list.filter((s) => {
+        const studentDebts = debts.filter((d) => d.studentId === s.id);
+        return studentDebts.some((d) => d.subjectId === subjectId);
+      });
+    }
 
-  if (subjectFilter) {
-    list = list.filter((s) => {
-      const studentDebts = getStudentDebts(s.id);
-      return studentDebts.some((d) => d.subjectId === subjectFilter);
-    });
-  }
+    return list;
+  }, [students, debts, search, onlyWithDebts, subjectFilter]);
 
-  return list;
-}
+  const selectedStudent = useMemo(
+    () => students.find((s) => s.id === selectedStudentId) || null,
+    [students, selectedStudentId]
+  );
 
-function renderStudentsList() {
-  const list = applyFilters();
-  studentsListEl.innerHTML = "";
-
-  if (!list.length) {
-    const empty = document.createElement("div");
-    empty.textContent = "Нет учеников по заданным фильтрам.";
-    empty.style.fontSize = "14px";
-    empty.style.color = "#777";
-    studentsListEl.appendChild(empty);
-    return;
-  }
-
-  list.forEach((student) => {
-    const card = document.createElement("div");
-    card.className = "student-card";
-    card.dataset.id = String(student.id);
-
-    const avatar = document.createElement("div");
-    avatar.className = "student-avatar";
-    avatar.textContent = getInitials(student.fullName);
-
-    const nameEl = document.createElement("div");
-    nameEl.className = "student-name";
-    nameEl.textContent = student.fullName;
-
-    const metaEl = document.createElement("div");
-    metaEl.className = "student-meta";
-
-    const avg = calcAverageGrade(student.id);
-    const studentDebts = getStudentDebts(student.id);
-    const openDebts = studentDebts.filter(
-      (d) => d.status === "open" || d.status === "in_progress"
-    );
-
-    const parts = [];
-    if (avg !== null) parts.push(`ср. ${avg}`);
-    if (openDebts.length) parts.push(`долгов: ${openDebts.length}`);
-
-    metaEl.textContent = parts.length ? parts.join(" • ") : "пока без данных";
-
-    card.appendChild(avatar);
-    card.appendChild(nameEl);
-    card.appendChild(metaEl);
-
-    card.addEventListener("click", () => {
-      selectedStudentId = student.id;
-      renderStudentDetails(student.id);
-    });
-
-    studentsListEl.appendChild(card);
-  });
-}
-
-// =============================
-// РЕНДЕР ПРАВОЙ ПАНЕЛИ
-// =============================
-
-function renderStudentDetails(studentId) {
-  const student = students.find((s) => s.id === studentId);
-  if (!student) return;
-
-  const studentGrades = getStudentGrades(studentId);
-  const studentDebts = getStudentDebts(studentId);
-  const studentNotes = getStudentNotes(studentId);
-  const avg = calcAverageGrade(studentId);
-
-  studentDetailsEl.innerHTML = "";
-
-  const container = document.createElement("div");
-  container.className = "student-details";
-
-  // Шапка
-  const header = document.createElement("div");
-  header.className = "student-details-header";
-
-  const avatar = document.createElement("div");
-  avatar.className = "details-avatar";
-  avatar.textContent = getInitials(student.fullName);
-
-  const info = document.createElement("div");
-
-  const nameEl = document.createElement("div");
-  nameEl.className = "details-name";
-  nameEl.textContent = student.fullName;
-
-  const metaEl = document.createElement("div");
-  metaEl.style.fontSize = "14px";
-  metaEl.style.color = "#666";
-
-  const metaParts = [`Класс: ${student.classLabel}`];
-  if (avg !== null) metaParts.push(`средний балл: ${avg}`);
-  metaEl.textContent = metaParts.join(" • ");
-
-  info.appendChild(nameEl);
-  info.appendChild(metaEl);
-
-  header.appendChild(avatar);
-  header.appendChild(info);
-
-  container.appendChild(header);
-
-  // Блок "Оценки"
-  const gradesSection = document.createElement("section");
-  gradesSection.className = "details-section";
-  const gradesTitle = document.createElement("h3");
-  gradesTitle.textContent = "Оценки";
-  gradesSection.appendChild(gradesTitle);
-
-  const gradesList = document.createElement("div");
-  gradesList.className = "details-list";
-
-  if (!studentGrades.length) {
-    const empty = document.createElement("div");
-    empty.className = "details-item";
-    empty.textContent = "Пока нет оценок.";
-    gradesList.appendChild(empty);
-  } else {
-    studentGrades.forEach((g) => {
-      const item = document.createElement("div");
-      item.className = "details-item";
-
-      const subj = getSubjectById(g.subjectId);
-      const subjName = subj ? subj.name : "Предмет";
-
-      item.textContent = `${subjName}: ${g.grade} (${g.date})`;
-      gradesList.appendChild(item);
-    });
-  }
-
-  gradesSection.appendChild(gradesList);
-  container.appendChild(gradesSection);
-
-  // Блок "Долги"
-  const debtsSection = document.createElement("section");
-  debtsSection.className = "details-section";
-  const debtsTitle = document.createElement("h3");
-  debtsTitle.textContent = "Долги";
-  debtsSection.appendChild(debtsTitle);
-
-  const debtsList = document.createElement("div");
-  debtsList.className = "details-list";
-
-  if (!studentDebts.length) {
-    const empty = document.createElement("div");
-    empty.className = "details-item";
-    empty.textContent = "Долгов нет. Пока.";
-    debtsList.appendChild(empty);
-  } else {
-    studentDebts.forEach((d) => {
-      const item = document.createElement("div");
-      item.className = "details-item";
-
-      const subj = getSubjectById(d.subjectId);
-      const subjName = subj ? subj.name : "Предмет";
-
-      const statusText =
-        d.status === "open"
-          ? "не выполнено"
-          : d.status === "in_progress"
-          ? "в процессе"
-          : "закрыто";
-
-      item.textContent = `${subjName}: ${d.desc} — ${statusText}`;
-      debtsList.appendChild(item);
-    });
-  }
-
-  debtsSection.appendChild(debtsList);
-  container.appendChild(debtsSection);
-
-  // Блок "Заметки"
-  const notesSection = document.createElement("section");
-  notesSection.className = "details-section";
-  const notesTitle = document.createElement("h3");
-  notesTitle.textContent = "Заметки";
-  notesSection.appendChild(notesTitle);
-
-  const notesList = document.createElement("div");
-  notesList.className = "details-list";
-
-  if (!studentNotes.length) {
-    const empty = document.createElement("div");
-    empty.className = "details-item";
-    empty.textContent = "Пока без заметок.";
-    notesList.appendChild(empty);
-  } else {
-    studentNotes.forEach((n) => {
-      const item = document.createElement("div");
-      item.className = "details-item";
-      item.textContent = `[${n.type}] ${n.text}`;
-      notesList.appendChild(item);
-    });
-  }
-
-  notesSection.appendChild(notesList);
-  container.appendChild(notesSection);
-
-  studentDetailsEl.appendChild(container);
-}
-
-// =============================
-// ОБЩИЙ ЧАТ (ПОКА ЗАГЛУШКА)
-// =============================
-
-if (commonChatBtn) {
-  commonChatBtn.addEventListener("click", () => {
+  const handleCommonChatClick = () => {
     alert(
-      "Здесь позже будет экран 'Общий чат' с темами: Домашка, ОГЭ, Объявления и т.д.\nСейчас это только макет."
+      "Пока это макет. Здесь позже будет экран 'Общий чат' с темами: Домашка, ОГЭ, Объявления и т.д."
     );
-  });
+  };
+
+  return (
+    <div className="app">
+      <header className="app-header">
+        <div className="app-header-left">
+          <h1 className="app-title">8А — Галерея учеников</h1>
+          <p className="app-subtitle">
+            Макет электронного журнала в стиле Telegram Mini App
+          </p>
+        </div>
+        <div className="app-header-right">
+          <button className="btn btn-primary" onClick={handleCommonChatClick}>
+            Общий чат
+          </button>
+        </div>
+      </header>
+
+      <main className="layout">
+        <section className="panel panel-left">
+          <div className="panel-header">
+            <h2>Ученики</h2>
+          </div>
+
+          <div className="filters">
+            <input
+              type="text"
+              className="input"
+              placeholder="Поиск по фамилии..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+
+            <div className="filters-row">
+              <label className="checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={onlyWithDebts}
+                  onChange={(e) => setOnlyWithDebts(e.target.checked)}
+                />
+                <span>Только с долгами</span>
+              </label>
+
+              <select
+                className="select"
+                value={subjectFilter}
+                onChange={(e) => setSubjectFilter(e.target.value)}
+              >
+                <option value="">Все предметы</option>
+                {subjects.map((subj) => (
+                  <option key={subj.id} value={subj.id}>
+                    {subj.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <StudentsGrid
+            students={filteredStudents}
+            subjects={subjects}
+            grades={grades}
+            debts={debts}
+            selectedStudentId={selectedStudentId}
+            onSelectStudent={setSelectedStudentId}
+          />
+        </section>
+
+        <section className="panel panel-right" id="student-details">
+          {selectedStudent ? (
+            <StudentDetails
+              student={selectedStudent}
+              subjects={subjects}
+              grades={grades}
+              debts={debts}
+              notes={notes}
+            />
+          ) : (
+            <div className="panel-placeholder">
+              <h2>Выбери ученика из списка</h2>
+              <p>
+                Слева галерея с карточками, а здесь будут оценки,
+                долги и заметки по выбранному ученику.
+              </p>
+              <p>Сейчас всё работает на тестовых данных без базы.</p>
+            </div>
+          )}
+        </section>
+      </main>
+    </div>
+  );
 }
 
-// =============================
-// ИНИЦИАЛИЗАЦИЯ
-// =============================
+function StudentsGrid({
+  students,
+  subjects,
+  grades,
+  debts,
+  selectedStudentId,
+  onSelectStudent
+}) {
+  if (!students.length) {
+    return (
+      <div style={{ fontSize: 14, color: "#777" }}>
+        Нет учеников по заданным фильтрам.
+      </div>
+    );
+  }
 
-function init() {
-  renderSubjectFilterOptions();
-  renderStudentsList();
+  return (
+    <div className="students-grid">
+      {students.map((student) => {
+        const avg = calcAverageGrade(grades, student.id);
+        const studentDebts = debts.filter((d) => d.studentId === student.id);
+        const openDebts = studentDebts.filter(
+          (d) => d.status === "open" || d.status === "in_progress"
+        );
 
-  // События фильтров
-  searchInputEl.addEventListener("input", () => {
-    renderStudentsList();
-    // при смене фильтра не сбрасываем выбранного, просто обновляем список
-  });
+        const metaParts = [];
+        if (avg !== null) metaParts.push(`ср. ${avg}`);
+        if (openDebts.length) metaParts.push(`долгов: ${openDebts.length}`);
 
-  filterDebtsEl.addEventListener("change", () => {
-    renderStudentsList();
-  });
+        const isSelected = selectedStudentId === student.id;
 
-  subjectFilterEl.addEventListener("change", () => {
-    renderStudentsList();
-  });
+        return (
+          <div
+            key={student.id}
+            className="student-card"
+            style={
+              isSelected
+                ? {
+                    borderColor: "#3390ec",
+                    boxShadow: "0 0 0 2px #3390ec33"
+                  }
+                : {}
+            }
+            onClick={() => onSelectStudent(student.id)}
+          >
+            <div className="student-avatar">
+              {getInitials(student.fullName)}
+            </div>
+            <div className="student-name">{student.fullName}</div>
+            <div className="student-meta">
+              {metaParts.length ? metaParts.join(" • ") : "пока без данных"}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
 }
 
-document.addEventListener("DOMContentLoaded", init);
+function StudentDetails({ student, subjects, grades, debts, notes }) {
+  const [activeTab, setActiveTab] = useState("grades");
+
+  const studentGrades = grades.filter((g) => g.studentId === student.id);
+  const studentDebts = debts.filter((d) => d.studentId === student.id);
+  const studentNotes = notes.filter((n) => n.studentId === student.id);
+
+  const avg = calcAverageGrade(grades, student.id);
+
+  return (
+    <div className="student-details">
+      <div className="student-details-header">
+        <div className="details-avatar">
+          {getInitials(student.fullName)}
+        </div>
+        <div>
+          <div className="details-name">{student.fullName}</div>
+          <div style={{ fontSize: 14, color: "#666" }}>
+            Класс: {student.classLabel}
+            {avg !== null ? ` • средний балл: ${avg}` : ""}
+          </div>
+        </div>
+      </div>
+
+      {/* Табы */}
+      <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+        <TabButton
+          active={activeTab === "grades"}
+          onClick={() => setActiveTab("grades")}
+        >
+          Оценки
+        </TabButton>
+        <TabButton
+          active={activeTab === "debts"}
+          onClick={() => setActiveTab("debts")}
+        >
+          Долги
+        </TabButton>
+        <TabButton
+          active={activeTab === "notes"}
+          onClick={() => setActiveTab("notes")}
+        >
+          Заметки
+        </TabButton>
+      </div>
+
+      {activeTab === "grades" && (
+        <section className="details-section">
+          <h3>Оценки</h3>
+          <div className="details-list">
+            {studentGrades.length === 0 ? (
+              <div className="details-item">Пока нет оценок.</div>
+            ) : (
+              studentGrades.map((g, idx) => {
+                const subj = getSubjectById(subjects, g.subjectId);
+                const subjName = subj ? subj.name : "Предмет";
+                return (
+                  <div key={idx} className="details-item">
+                    {subjName}: {g.grade} ({g.date})
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </section>
+      )}
+
+      {activeTab === "debts" && (
+        <section className="details-section">
+          <h3>Долги</h3>
+          <div className="details-list">
+            {studentDebts.length === 0 ? (
+              <div className="details-item">Долгов нет. Пока.</div>
+            ) : (
+              studentDebts.map((d, idx) => {
+                const subj = getSubjectById(subjects, d.subjectId);
+                const subjName = subj ? subj.name : "Предмет";
+                const statusText =
+                  d.status === "open"
+                    ? "не выполнено"
+                    : d.status === "in_progress"
+                    ? "в процессе"
+                    : "закрыто";
+
+                return (
+                  <div key={idx} className="details-item">
+                    {subjName}: {d.desc} — {statusText}
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </section>
+      )}
+
+      {activeTab === "notes" && (
+        <section className="details-section">
+          <h3>Заметки</h3>
+          <div className="details-list">
+            {studentNotes.length === 0 ? (
+              <div className="details-item">Пока без заметок.</div>
+            ) : (
+              studentNotes.map((n, idx) => (
+                <div key={idx} className="details-item">
+                  [{n.type}] {n.text}
+                </div>
+              ))
+            )}
+          </div>
+        </section>
+      )}
+    </div>
+  );
+}
+
+function TabButton({ active, children, onClick }) {
+  return (
+    <button
+      className="btn"
+      onClick={onClick}
+      style={{
+        padding: "8px 12px",
+        borderRadius: 999,
+        fontSize: 14,
+        border: active ? "1px solid #3390ec" : "1px solid #ddd",
+        background: active ? "#e7f2ff" : "#fff"
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+
+// Монтируем всё это безобразие
+const rootEl = document.getElementById("root");
+const root = ReactDOM.createRoot(rootEl);
+root.render(<App />);
