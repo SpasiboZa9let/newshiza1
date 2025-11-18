@@ -54,7 +54,7 @@ function LoginScreen({ onLogin }) {
           <input
             type="password"
             className="input"
-            placeholder="Парпароль"
+            placeholder="Пароль"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
@@ -166,6 +166,41 @@ function JournalApp({ state, setState, auth, onLogout }) {
     }));
   };
 
+  const handleAddAbsence = (studentId) => {
+    if (!isAdminMode) {
+      alert("Добавлять пропуски может только учитель.");
+      return;
+    }
+
+    const type = window.prompt(
+      'Тип (введи "п" для пропуска или "о" для опоздания):',
+      "п"
+    );
+    if (!type) return;
+
+    const norm =
+      type.toLowerCase().trim() === "о"
+        ? "late"
+        : type.toLowerCase().trim() === "п"
+        ? "absence"
+        : null;
+
+    if (!norm) {
+      alert('Нужно ввести "п" или "о".');
+      return;
+    }
+
+    const today = new Date().toISOString().slice(0, 10);
+
+    updateState((prev) => ({
+      ...prev,
+      absences: [
+        ...prev.absences,
+        { id: Date.now(), studentId, date: today, type: norm }
+      ]
+    }));
+  };
+
   const filteredStudents = useMemo(() => {
     let list = [...students];
 
@@ -255,9 +290,11 @@ function JournalApp({ state, setState, auth, onLogout }) {
             grades={grades}
             debts={debts}
             notes={notes}
+            absences={absences}
             onEditGrade={handleEditGrade}
             onChangeDebtStatus={handleChangeDebtStatus}
             onAddNote={handleAddNote}
+            onAddAbsence={handleAddAbsence}
           />
         </main>
       </div>
