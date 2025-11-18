@@ -1,0 +1,177 @@
+/* Хедер ученика */
+.details-content {
+  max-width: 100%;
+}
+
+.details-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.details-avatar {
+  width: 80px;
+  height: 80px;
+  background: #e5e5e5;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: bold;
+}
+
+.details-meta {
+  font-size: 13px;
+  color: #666;
+}
+
+/* Секции справа */
+.details-section {
+  margin-top: 22px;
+}
+
+.details-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  gap: 12px;
+}
+
+.details-section-header h3 {
+  font-size: 16px;
+}
+
+.details-section-subtitle {
+  font-size: 12px;
+  color: #777;
+}
+
+/* Оценки (grid) */
+.grades-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  overflow: hidden;
+  font-size: 14px;
+}
+
+.grades-grid-header {
+  background: #f3f3f5;
+  padding: 8px 10px;
+  font-weight: 600;
+  border-bottom: 1px solid #ddd;
+}
+
+.grades-grid-header:nth-child(2) {
+  border-left: 1px solid #ddd;
+}
+
+.grades-grid-cell {
+  padding: 8px 10px;
+  border-top: 1px solid #eee;
+}
+
+.grades-grid-subject {
+  border-right: 1px solid #eee;
+  text-align: left;
+}
+
+.grades-grid-grade {
+  background: transparent;
+  border: none;
+  width: 100%;
+  text-align: center;
+  cursor: pointer;
+}
+
+.grades-grid-grade--empty {
+  color: #aaa;
+}
+
+/* Долги */
+.debts-list {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.debts-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+}
+
+.debts-main {
+  flex: 1;
+}
+
+.debts-subject {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.debts-desc {
+  font-size: 13px;
+  color: #555;
+}
+
+.debts-status {
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.debts-status--open {
+  background: #ffe4e4;
+  color: #b30000;
+}
+
+.debts-status--in_progress {
+  background: #fff4ce;
+  color: #947100;
+}
+
+.debts-status--closed {
+  background: #dff7df;
+  color: #1b6e1b;
+}
+
+/* Заметки */
+.notes-list {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.note-item {
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  padding: 10px 12px;
+}
+
+.note-type {
+  font-size: 12px;
+  color: #777;
+  margin-bottom: 4px;
+}
+
+.note-text {
+  font-size: 14px;
+}
