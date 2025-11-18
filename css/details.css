@@ -260,3 +260,37 @@
   padding: 2px 0;
   font-size: 13px;
 }
+
+/* Кнопки оценки — визуальный фидбек */
+
+.grade-entry-btn {
+  min-width: 32px;
+  padding: 4px 0;
+  font-size: 14px;
+  border-radius: 6px;
+  transition: background-color 0.15s, transform 0.1s;
+  background: #f1f1f1;
+  border: 1px solid #ccc;
+}
+
+.grade-entry-btn:hover {
+  background: #e7e7ff;
+  border-color: #999;
+}
+
+.grade-entry-btn:active {
+  transform: scale(0.9);
+  background: #d5d5ff;
+  border-color: #666;
+}
+
+/* анимация "вспышки" после клика */
+.grade-entry-btn.flash {
+  animation: flashPulse 0.35s ease-out;
+}
+
+@keyframes flashPulse {
+  0%   { background-color: #c9ffcc; }
+  70%  { background-color: #f1f1f1; }
+  100% { background-color: #f1f1f1; }
+}
