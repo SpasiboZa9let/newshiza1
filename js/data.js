@@ -12,16 +12,16 @@ window.__DATA__ = {
   ],
 
   students: [
-    { id: 1, fullName: "Закарьяева Алина", classLabel: "8А" },
-    { id: 2, fullName: "Захаров Иван", classLabel: "8А" },
-    { id: 3, fullName: "Константинова Мария", classLabel: "8А" },
-    { id: 4, fullName: "Кузин Даниил", classLabel: "8А" },
-    { id: 5, fullName: "Подоров Семён", classLabel: "8А" },
+    { id: 1, fullName: "Закарьяева Эсмира", classLabel: "8А" },
+    { id: 2, fullName: "Захаров Михаил", classLabel: "8А" },
+    { id: 3, fullName: "Константинова Кристина", classLabel: "8А" },
+    { id: 4, fullName: "Кузин Максим", classLabel: "8А" },
+    { id: 5, fullName: "Подоров Никита", classLabel: "8А" },
     { id: 6, fullName: "Саламатов Артём", classLabel: "8А" },
-    { id: 7, fullName: "Фомин Никита", classLabel: "8А" },
-    { id: 8, fullName: "Бродецкий Артём", classLabel: "8А" },
-    { id: 9, fullName: "Головко Анастасия", classLabel: "8А" },
-    { id: 10, fullName: "Ласкина Екатерина", classLabel: "8А" }
+    { id: 7, fullName: "Фомин Даниил", classLabel: "8А" },
+    { id: 8, fullName: "Бродецкий Виктор", classLabel: "8А" },
+    { id: 9, fullName: "Головко Полина", classLabel: "8А" },
+    { id: 10, fullName: "Ласкина Алина", classLabel: "8А" }
   ],
 
   grades: [
