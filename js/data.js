@@ -12,19 +12,18 @@ window.__DATA__ = {
   ],
 
   students: [
-    { id: 1, fullName: "Закарьяева Эсмира", classLabel: "8А" },
-    { id: 2, fullName: "Захаров Михаил", classLabel: "8А" },
-    { id: 3, fullName: "Константинова Кристина", classLabel: "8А" },
-    { id: 4, fullName: "Кузин Максим", classLabel: "8А" },
-    { id: 5, fullName: "Подоров Никита", classLabel: "8А" },
-    { id: 6, fullName: "Саламатов Артём", classLabel: "8А" },
-    { id: 7, fullName: "Фомин Даниил", classLabel: "8А" },
-    { id: 8, fullName: "Бродецкий Виктор", classLabel: "8А" },
-    { id: 9, fullName: "Головко Полина", classLabel: "8А" },
-    { id: 10, fullName: "Ласкина Алина", classLabel: "8А" }
+    { id: 1, fullName: "Закарьяева Эсмира", classLabel: "8А", accessKey: "zakar-8a-2025" },
+    { id: 2, fullName: "Захаров Михаил", classLabel: "8А", accessKey: "zakhar-8a-2025" },
+    { id: 3, fullName: "Константинова Кристина", classLabel: "8А", accessKey: "konst-8a-2025" },
+    { id: 4, fullName: "Кузин Максим", classLabel: "8А", accessKey: "kuzin-8a-2025" },
+    { id: 5, fullName: "Подоров Никита", classLabel: "8А", accessKey: "podor-8a-2025" },
+    { id: 6, fullName: "Саламатов Артём", classLabel: "8А", accessKey: "salam-8a-2025" },
+    { id: 7, fullName: "Фомин Даниил", classLabel: "8А", accessKey: "fomin-8a-2025" },
+    { id: 8, fullName: "Бродецкий Виктор", classLabel: "8А", accessKey: "brod-8a-2025" },
+    { id: 9, fullName: "Головко Полина", classLabel: "8А", accessKey: "gol-8a-2025" },
+    { id: 10, fullName: "Ласкина Алина", classLabel: "8А", accessKey: "lask-8a-2025" }
   ],
 
-  // ВАЖНО: используем value, а не grade + добавляем id
   grades: [
     { id: 1, studentId: 1, subjectId: 1, value: 4, date: "2025-11-10" },
     { id: 2, studentId: 1, subjectId: 3, value: 5, date: "2025-11-11" },
@@ -37,7 +36,6 @@ window.__DATA__ = {
     { id: 6, studentId: 7, subjectId: 1, value: 5, date: "2025-11-10" }
   ],
 
-  // Долги: добавлены id, чтобы статус можно было переключать
   debts: [
     {
       id: 1,
@@ -69,7 +67,6 @@ window.__DATA__ = {
     }
   ],
 
-  // Заметки: тоже с id
   notes: [
     {
       id: 1,
