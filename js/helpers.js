@@ -1,11 +1,13 @@
 const STORAGE_KEY = "class_journal_state_v1";
 
+const SUBJECTS = window.__SUBJECTS__ || [];
+
 const BASE_DATA = window.__DATA__ || {
   students: [],
-  subjects: [],
   grades: [],
   debts: [],
-  notes: []
+  notes: [],
+  absences: []
 };
 
 function loadInitialState() {
@@ -15,10 +17,10 @@ function loadInitialState() {
     const parsed = JSON.parse(raw);
     return {
       students: parsed.students || BASE_DATA.students,
-      subjects: parsed.subjects || BASE_DATA.subjects,
       grades: parsed.grades || BASE_DATA.grades,
       debts: parsed.debts || BASE_DATA.debts,
-      notes: parsed.notes || BASE_DATA.notes
+      notes: parsed.notes || BASE_DATA.notes,
+      absences: parsed.absences || BASE_DATA.absences
     };
   } catch (e) {
     console.error("Ошибка чтения localStorage", e);
@@ -51,34 +53,13 @@ function getLastGrade(grades, studentId, subjectId) {
 
 function statusLabel(status) {
   switch (status) {
-    case "open": return "Открыт";
-    case "in_progress": return "В работе";
-    case "closed": return "Закрыт";
-    default: return status;
+    case "open":
+      return "Открыт";
+    case "in_progress":
+      return "В работе";
+    case "closed":
+      return "Закрыт";
+    default:
+      return status;
   }
-}
-
-function getAccessContext() {
-  const params = new URLSearchParams(window.location.search);
-
-  const ADMIN_SECRET = "teacher-2025"; // поменяй на свой
-
-  const adminParam = params.get("admin");
-  const keyParam = params.get("key");
-
-  // Админ
-  if (adminParam && adminParam === ADMIN_SECRET) {
-    return { mode: "admin", studentId: null };
-  }
-
-  // Ученик по ключу
-  if (keyParam) {
-    const st = BASE_DATA.students.find((s) => s.accessKey === keyParam);
-    if (st) {
-      return { mode: "student", studentId: st.id };
-    }
-  }
-
-  // Без параметров / неизвестный ключ — публичный режим
-  return { mode: "public", studentId: null };
 }
