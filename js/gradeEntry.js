@@ -77,13 +77,21 @@ function GradeEntryPanel({ students, subjects, onAddGrade }) {
             <div className="grade-entry-buttons">
               {[2, 3, 4, 5].map((v) => (
                 <button
-                  key={v}
-                  type="button"
-                  className="btn grade-entry-btn"
-                  onClick={() => handleClickGrade(st.id, v)}
-                >
-                  {v}
-                </button>
+  key={v}
+  type="button"
+  className="btn grade-entry-btn"
+  onClick={(e) => {
+    handleClickGrade(st.id, v);
+
+    // Флэш-анимация
+    e.target.classList.remove("flash");
+    void e.target.offsetWidth; // перезапуск анимации
+    e.target.classList.add("flash");
+  }}
+>
+  {v}
+</button>
+
               ))}
             </div>
           </div>
