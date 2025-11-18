@@ -17,7 +17,6 @@ function loadInitialState() {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return BASE_DATA;
     const parsed = JSON.parse(raw);
-    // Минимальная защита от мусора
     return {
       students: parsed.students || BASE_DATA.students,
       subjects: parsed.subjects || BASE_DATA.subjects,
@@ -51,7 +50,6 @@ function getLastGrade(grades, studentId, subjectId) {
     (g) => g.studentId === studentId && g.subjectId === subjectId
   );
   if (list.length === 0) return null;
-  // считаем, что в массиве уже хронология, берем последнюю
   return list[list.length - 1];
 }
 
@@ -68,10 +66,6 @@ function statusLabel(status) {
   }
 }
 
-// ============================
-//   КОМПОНЕНТ ПРИЛОЖЕНИЯ
-// ============================
-
 function App() {
   const [state, setState] = useState(loadInitialState);
   const [selectedStudentId, setSelectedStudentId] = useState(null);
@@ -79,16 +73,14 @@ function App() {
   const [onlyWithDebts, setOnlyWithDebts] = useState(false);
   const [subjectFilter, setSubjectFilter] = useState("all");
 
+  // новый стейт: какой предмет выбран для истории оценок
+  const [historySubjectId, setHistorySubjectId] = useState(null);
+
   const { students, subjects, grades, debts, notes } = state;
 
-  // Сохраняем всё при любом изменении
   useEffect(() => {
     saveState(state);
   }, [state]);
-
-  // ============================
-  //   МУТАЦИИ СОСТОЯНИЯ
-  // ============================
 
   const updateState = (updater) => {
     setState((prev) => {
@@ -99,6 +91,7 @@ function App() {
 
   const handleSelectStudent = (id) => {
     setSelectedStudentId(id);
+    setHistorySubjectId(null); // сбрасываем выбранный предмет при смене ученика
   };
 
   const handleEditGrade = (studentId, subjectId) => {
@@ -106,7 +99,7 @@ function App() {
     const defaultValue = current ? String(current.value) : "";
     const input = window.prompt("Новая оценка (2–5):", defaultValue);
 
-    if (input === null) return; // отмена
+    if (input === null) return;
 
     const num = parseInt(input, 10);
     if (![2, 3, 4, 5].includes(num)) {
@@ -163,10 +156,6 @@ function App() {
     }));
   };
 
-  // ============================
-  //   ВЫЧИСЛЯЕМЫЕ ДАННЫЕ
-  // ============================
-
   const filteredStudents = useMemo(() => {
     let list = [...students];
 
@@ -209,7 +198,6 @@ function App() {
     return notes.filter((n) => n.studentId === selectedStudent.id);
   }, [notes, selectedStudent]);
 
-  // Для краткого обзора успеваемости: предмет → последняя оценка
   const performanceBySubject = useMemo(() => {
     if (!selectedStudent) return [];
     return subjects.map((subj) => {
@@ -221,9 +209,27 @@ function App() {
     });
   }, [subjects, grades, selectedStudent]);
 
-  // ============================
-  //   РЕНДЕР
-  // ============================
+  const selectedSubjectForHistory = useMemo(
+    () => subjects.find((s) => s.id === historySubjectId) || null,
+    [subjects, historySubjectId]
+  );
+
+  const selectedHistoryGrades = useMemo(() => {
+    if (!selectedStudent || !selectedSubjectForHistory) return [];
+    return grades
+      .filter(
+        (g) =>
+          g.studentId === selectedStudent.id &&
+          g.subjectId === selectedSubjectForHistory.id
+      )
+      .slice()
+      .sort((a, b) => {
+        // по дате, старые сверху
+        const da = a.date || "";
+        const db = b.date || "";
+        return da.localeCompare(db);
+      });
+  }, [grades, selectedStudent, selectedSubjectForHistory]);
 
   return (
     <div className="app">
@@ -235,7 +241,6 @@ function App() {
       </header>
 
       <div className="app-layout">
-        {/* ЛЕВАЯ КОЛОНКА: фильтры + список учеников */}
         <aside className="sidebar">
           <div className="filters-card">
             <input
@@ -281,7 +286,9 @@ function App() {
               return (
                 <button
                   key={st.id}
-                  className={"student-card" + (active ? " student-card--active" : "")}
+                  className={
+                    "student-card" + (active ? " student-card--active" : "")
+                  }
                   onClick={() => handleSelectStudent(st.id)}
                 >
                   <div className="student-avatar">
@@ -291,7 +298,9 @@ function App() {
                     <div className="student-name">{st.fullName}</div>
                     <div className="student-meta">
                       <span>{st.classLabel || "Класс не указан"}</span>
-                      {hasDebts && <span className="student-badge">Есть долги</span>}
+                      {hasDebts && (
+                        <span className="student-badge">Есть долги</span>
+                      )}
                     </div>
                   </div>
                 </button>
@@ -300,7 +309,6 @@ function App() {
           </div>
         </aside>
 
-        {/* ПРАВАЯ КОЛОНКА: детали ученика */}
         <main className="details">
           {!selectedStudent && (
             <div className="placeholder">
@@ -322,12 +330,12 @@ function App() {
                 </div>
               </div>
 
-              {/* Блок успеваемости */}
               <section className="details-section">
                 <div className="details-section-header">
                   <h3>Успеваемость по предметам</h3>
                   <p className="details-section-subtitle">
-                    Клик по ячейке с оценкой — изменить последнюю.
+                    Клик по предмету — показать историю. Клик по оценке — изменить
+                    последнюю.
                   </p>
                 </div>
                 <div className="grades-grid">
@@ -335,9 +343,17 @@ function App() {
                   <div className="grades-grid-header">Последняя оценка</div>
                   {performanceBySubject.map(({ subject, lastGrade }) => (
                     <React.Fragment key={subject.id}>
-                      <div className="grades-grid-cell grades-grid-subject">
+                      <button
+                        type="button"
+                        className="grades-grid-cell grades-grid-subject"
+                        onClick={() =>
+                          setHistorySubjectId(
+                            historySubjectId === subject.id ? null : subject.id
+                          )
+                        }
+                      >
                         {subject.name}
-                      </div>
+                      </button>
                       <button
                         className={
                           "grades-grid-cell grades-grid-grade" +
@@ -352,9 +368,34 @@ function App() {
                     </React.Fragment>
                   ))}
                 </div>
+
+                {selectedSubjectForHistory && (
+                  <div className="grades-history">
+                    <div className="grades-history-title">
+                      История оценок по предмету:{" "}
+                      <strong>{selectedSubjectForHistory.name}</strong>
+                    </div>
+                    {selectedHistoryGrades.length === 0 && (
+                      <div className="empty">
+                        Пока нет оценок по этому предмету.
+                      </div>
+                    )}
+                    {selectedHistoryGrades.length > 0 && (
+                      <div className="grades-history-list">
+                        {selectedHistoryGrades.map((g) => (
+                          <div className="grades-history-item" key={g.id}>
+                            <div className="grades-history-date">
+                              {g.date || "дата не указана"}
+                            </div>
+                            <div className="grades-history-value">{g.value}</div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
               </section>
 
-              {/* Блок долгов */}
               <section className="details-section">
                 <div className="details-section-header">
                   <h3>Долги</h3>
@@ -394,7 +435,6 @@ function App() {
                 )}
               </section>
 
-              {/* Блок заметок */}
               <section className="details-section">
                 <div className="details-section-header">
                   <h3>Заметки</h3>
@@ -437,7 +477,6 @@ function App() {
   );
 }
 
-// Монтируем
 const rootEl = document.getElementById("root");
 const root = ReactDOM.createRoot(rootEl);
 root.render(<App />);
