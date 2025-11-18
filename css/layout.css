@@ -1,0 +1,76 @@
+/* Каркас приложения */
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Шапка */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  background: #ffffff;
+  border-bottom: 1px solid #ddd;
+}
+
+.app-header h1 {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.app-subtitle {
+  font-size: 13px;
+  color: #666;
+}
+
+/* Основная двухколоночная раскладка */
+.app-layout {
+  display: flex;
+  flex: 1;
+  padding: 16px 20px;
+  gap: 20px;
+  overflow: hidden;
+}
+
+/* Левая колонка */
+.sidebar {
+  width: 320px;
+  max-width: 100%;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+/* Правая колонка */
+.details {
+  flex: 1;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  padding: 20px;
+  overflow-y: auto;
+  position: relative;
+}
+
+/* Заглушка справа */
+.placeholder {
+  text-align: center;
+  margin-top: 80px;
+  color: #777;
+}
+
+/* Адаптив */
+@media (max-width: 900px) {
+  .app-layout {
+    flex-direction: column;
+  }
+
+  .sidebar,
+  .details {
+    width: 100%;
+  }
+}
