@@ -12,12 +12,12 @@ const { useState } = React;
  */
 function GradeEntryPanel({ students, subjects, onAddGrade }) {
   const [date, setDate] = useState(() => {
-    // сегодняшняя дата в формате YYYY-MM-DD
     const d = new Date();
     const m = String(d.getMonth() + 1).padStart(2, "0");
     const day = String(d.getDate()).padStart(2, "0");
     return `${d.getFullYear()}-${m}-${day}`;
   });
+
   const [subjectId, setSubjectId] = useState(
     subjects.length ? String(subjects[0].id) : ""
   );
@@ -28,7 +28,7 @@ function GradeEntryPanel({ students, subjects, onAddGrade }) {
 
   const handleClickGrade = (studentId, value) => {
     if (!date || !subjectId) {
-      alert("Выбери дату и предмет.");
+      alert("Сначала выбери дату и предмет.");
       return;
     }
     onAddGrade(date, Number(subjectId), studentId, value);
@@ -39,7 +39,7 @@ function GradeEntryPanel({ students, subjects, onAddGrade }) {
       <div className="details-section-header">
         <h3>Быстрое выставление оценок</h3>
         <p className="details-section-subtitle">
-          1) Выбери дату и предмет · 2) Нажимай на оценки у нужных учеников.
+          1) Дата и предмет · 2) Нажимай на оценки у нужных учеников.
         </p>
       </div>
 
@@ -77,21 +77,19 @@ function GradeEntryPanel({ students, subjects, onAddGrade }) {
             <div className="grade-entry-buttons">
               {[2, 3, 4, 5].map((v) => (
                 <button
-  key={v}
-  type="button"
-  className="btn grade-entry-btn"
-  onClick={(e) => {
-    handleClickGrade(st.id, v);
-
-    // Флэш-анимация
-    e.target.classList.remove("flash");
-    void e.target.offsetWidth; // перезапуск анимации
-    e.target.classList.add("flash");
-  }}
->
-  {v}
-</button>
-
+                  key={v}
+                  type="button"
+                  className="btn grade-entry-btn"
+                  onClick={(e) => {
+                    handleClickGrade(st.id, v);
+                    // Перезапуск анимации "flash"
+                    e.target.classList.remove("flash");
+                    void e.target.offsetWidth;
+                    e.target.classList.add("flash");
+                  }}
+                >
+                  {v}
+                </button>
               ))}
             </div>
           </div>
