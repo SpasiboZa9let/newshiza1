@@ -1,0 +1,82 @@
+/* Панель быстрого выставления оценок */
+
+.grade-entry {
+  margin-bottom: 16px;
+  border: 1px dashed #d0d0d0;
+  background: #fafcff;
+}
+
+.grade-entry-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.grade-entry-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.grade-entry-students {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 260px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.grade-entry-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+.grade-entry-name {
+  flex: 1;
+  padding-right: 8px;
+}
+
+.grade-entry-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+/* Кнопки оценки — визуальный фидбек */
+
+.grade-entry-btn {
+  min-width: 32px;
+  padding: 4px 0;
+  font-size: 14px;
+  border-radius: 6px;
+  transition: background-color 0.15s, transform 0.1s;
+  background: #f1f1f1;
+  border: 1px solid #ccc;
+}
+
+.grade-entry-btn:hover {
+  background: #e7e7ff;
+  border-color: #999;
+}
+
+.grade-entry-btn:active {
+  transform: scale(0.9);
+  background: #d5d5ff;
+  border-color: #666;
+}
+
+/* анимация "вспышки" после клика */
+
+.grade-entry-btn.flash {
+  animation: flashPulse 0.35s ease-out;
+}
+
+@keyframes flashPulse {
+  0%   { background-color: #c9ffcc; }
+  70%  { background-color: #f1f1f1; }
+  100% { background-color: #f1f1f1; }
+}
