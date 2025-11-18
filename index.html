@@ -2,23 +2,37 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <title>Классный журнал — React макет</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Классный журнал</title>
 
-  <link rel="stylesheet" href="css/styles.css" />
+  <!-- Стили по частям -->
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/sidebar.css" />
+  <link rel="stylesheet" href="css/details.css" />
 </head>
-<body>
-    <div id="root"></div>
 
-  <!-- React -->
+<body>
+
+  <div id="root"></div>
+
+  <!-- React + Babel -->
   <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
+  <!-- Данные -->
   <script src="js/data.js"></script>
-  <script type="text/babel" src="js/helpers.js"></script>
-  <script type="text/babel" src="js/components.js"></script>
-  <script type="text/babel" src="js/app.js"></script>
-</body>
 
+  <!-- Хелперы -->
+  <script type="text/babel" src="js/helpers.js"></script>
+
+  <!-- Разделённые компоненты -->
+  <script type="text/babel" src="js/components.list.js"></script>
+  <script type="text/babel" src="js/components.details.js"></script>
+
+  <!-- Основной App -->
+  <script type="text/babel" src="js/app.js"></script>
+
+</body>
 </html>
