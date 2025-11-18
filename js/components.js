@@ -1,6 +1,14 @@
-const { useMemo } = React;
+const { useMemo, useState } = React;
 
-function FiltersPanel({ subjects, search, onSearchChange, onlyWithDebts, onToggleDebts, subjectFilter, onSubjectFilterChange }) {
+function FiltersPanel({
+  subjects,
+  search,
+  onSearchChange,
+  onlyWithDebts,
+  onToggleDebts,
+  subjectFilter,
+  onSubjectFilterChange
+}) {
   return (
     <div className="filters-card">
       <input
@@ -25,7 +33,9 @@ function FiltersPanel({ subjects, search, onSearchChange, onlyWithDebts, onToggl
       >
         <option value="all">Все предметы</option>
         {subjects.map((subj) => (
-          <option key={subj.id} value={subj.id}>{subj.name}</option>
+          <option key={subj.id} value={subj.id}>
+            {subj.name}
+          </option>
         ))}
       </select>
     </div>
@@ -45,7 +55,9 @@ function StudentsList({ students, debts, selectedStudentId, onSelect }) {
         return (
           <button
             key={st.id}
-            className={"student-card" + (active ? " student-card--active" : "")}
+            className={
+              "student-card" + (active ? " student-card--active" : "")
+            }
             onClick={() => onSelect(st.id)}
           >
             <div className="student-avatar">
@@ -55,7 +67,9 @@ function StudentsList({ students, debts, selectedStudentId, onSelect }) {
               <div className="student-name">{st.fullName}</div>
               <div className="student-meta">
                 <span>{st.classLabel || "Класс не указан"}</span>
-                {hasDebts && <span className="student-badge">Есть долги</span>}
+                {hasDebts && (
+                  <span className="student-badge">Есть долги</span>
+                )}
               </div>
             </div>
           </button>
@@ -66,6 +80,8 @@ function StudentsList({ students, debts, selectedStudentId, onSelect }) {
 }
 
 function GradesBlock({ student, subjects, grades, onEditGrade }) {
+  const [selectedSubjectId, setSelectedSubjectId] = useState(null);
+
   const performanceBySubject = useMemo(() => {
     if (!student) return [];
     return subjects.map((subj) => {
@@ -74,14 +90,49 @@ function GradesBlock({ student, subjects, grades, onEditGrade }) {
     });
   }, [subjects, grades, student]);
 
+  const selectedSubject = useMemo(() => {
+    if (!student || !selectedSubjectId) return null;
+    return subjects.find((s) => s.id === selectedSubjectId) || null;
+  }, [subjects, student, selectedSubjectId]);
+
+  const history = useMemo(() => {
+    if (!student || !selectedSubjectId) return [];
+    return grades
+      .filter(
+        (g) =>
+          g.studentId === student.id &&
+          g.subjectId === selectedSubjectId
+      )
+      .sort((a, b) => {
+        if (a.date === b.date) return 0;
+        return a.date < b.date ? -1 : 1;
+      });
+  }, [grades, student, selectedSubjectId]);
+
   if (!student) return null;
+
+  const handleRowClick = (subjectId) => {
+    setSelectedSubjectId((prev) => (prev === subjectId ? null : subjectId));
+  };
+
+  const handleAddGrade = () => {
+    if (!student || !selectedSubjectId) return;
+    onEditGrade(student.id, selectedSubjectId);
+  };
+
+  const formatDate = (iso) => {
+    if (!iso) return "";
+    const parts = iso.split("-");
+    if (parts.length !== 3) return iso;
+    return `${parts[2]}.${parts[1]}.${parts[0]}`;
+  };
 
   return (
     <section className="details-section">
       <div className="details-section-header">
         <h3>Успеваемость по предметам</h3>
         <p className="details-section-subtitle">
-          Клик по оценке — изменить последнюю.
+          Клик по строке предмета — посмотреть все оценки.
         </p>
       </div>
       <div className="grades-grid">
@@ -89,21 +140,119 @@ function GradesBlock({ student, subjects, grades, onEditGrade }) {
         <div className="grades-grid-header">Последняя оценка</div>
         {performanceBySubject.map(({ subject, lastGrade }) => (
           <React.Fragment key={subject.id}>
-            <div className="grades-grid-cell grades-grid-subject">
+            <button
+              className="grades-grid-cell grades-grid-subject grades-grid-subject-btn"
+              onClick={() => handleRowClick(subject.id)}
+            >
               {subject.name}
-            </div>
+            </button>
             <button
               className={
                 "grades-grid-cell grades-grid-grade" +
                 (lastGrade ? "" : " grades-grid-grade--empty")
               }
-              onClick={() => onEditGrade(student.id, subject.id)}
+              onClick={() => handleRowClick(subject.id)}
             >
               {lastGrade ? lastGrade.value : "—"}
             </button>
           </React.Fragment>
         ))}
       </div>
+
+      {selectedSubject && (
+        <div className="grades-history">
+          <div className="grades-history-title">
+            История оценок: {selectedSubject.name}
+          </div>
+
+          {history.length === 0 && (
+            <div className="grades-history-empty">
+              Пока нет оценок по этому предмету.
+            </div>
+          )}
+
+          {history.length > 0 && (
+            <div className="grades-history-list">
+              {history.map((g) => (
+                <div
+                  className="grades-history-row"
+                  key={g.id || `${g.date}-${g.value}`}
+                >
+                  <span className="grades-history-date">
+                    {formatDate(g.date)}
+                  </span>
+                  <span className="grades-history-value">
+                    {g.value}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="grades-history-actions">
+            <button
+              className="btn btn-primary"
+              type="button"
+              onClick={handleAddGrade}
+            >
+              Добавить / изменить оценку
+            </button>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function AbsencesBlock({ student, absences, onAddAbsence }) {
+  if (!student) return null;
+
+  const studentAbsences = absences
+    .filter((a) => a.studentId === student.id)
+    .sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+
+  const formatDate = (iso) => {
+    if (!iso) return "";
+    const parts = iso.split("-");
+    if (parts.length !== 3) return iso;
+    return `${parts[2]}.${parts[1]}.${parts[0]}`;
+  };
+
+  const typeLabel = (t) => {
+    if (t === "late") return "Опоздание";
+    if (t === "absence") return "Пропуск";
+    return t || "";
+  };
+
+  return (
+    <section className="details-section">
+      <div className="details-section-header">
+        <h3>Пропуски и опоздания</h3>
+        <button
+          className="btn"
+          type="button"
+          onClick={() => onAddAbsence(student.id)}
+        >
+          + Добавить запись
+        </button>
+      </div>
+
+      {studentAbsences.length === 0 && (
+        <div className="empty">Пока нет данных о пропусках и опозданиях.</div>
+      )}
+
+      {studentAbsences.length > 0 && (
+        <div className="absences-list">
+          {studentAbsences.map((a) => (
+            <div className="absence-item" key={a.id}>
+              <span className="absence-date">{formatDate(a.date)}</span>
+              <span className={"absence-type absence-type--" + a.type}>
+                {typeLabel(a.type)}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
     </section>
   );
 }
@@ -193,11 +342,22 @@ function NotesBlock({ student, notes, onAddNote }) {
   );
 }
 
-function StudentDetails({ student, subjects, grades, debts, notes, onEditGrade, onChangeDebtStatus, onAddNote }) {
+function StudentDetails({
+  student,
+  subjects,
+  grades,
+  debts,
+  notes,
+  absences,
+  onEditGrade,
+  onChangeDebtStatus,
+  onAddNote,
+  onAddAbsence
+}) {
   if (!student) {
     return (
       <div className="placeholder">
-        Выбери ученика слева, чтобы посмотреть оценки, долги и заметки.
+        Выбери ученика слева, чтобы посмотреть оценки, пропуски и долги.
       </div>
     );
   }
@@ -221,6 +381,12 @@ function StudentDetails({ student, subjects, grades, debts, notes, onEditGrade, 
         subjects={subjects}
         grades={grades}
         onEditGrade={onEditGrade}
+      />
+
+      <AbsencesBlock
+        student={student}
+        absences={absences}
+        onAddAbsence={onAddAbsence}
       />
 
       <DebtsBlock
