@@ -1,8 +1,12 @@
 const { useState, useEffect, useMemo } = React;
 
+const ACCESS = getAccessContext();
+
 function App() {
   const [state, setState] = useState(loadInitialState);
-  const [selectedStudentId, setSelectedStudentId] = useState(null);
+  const [selectedStudentId, setSelectedStudentId] = useState(
+    ACCESS.mode === "student" ? ACCESS.studentId : null
+  );
   const [search, setSearch] = useState("");
   const [onlyWithDebts, setOnlyWithDebts] = useState(false);
   const [subjectFilter, setSubjectFilter] = useState("all");
@@ -21,6 +25,12 @@ function App() {
   };
 
   const handleEditGrade = (studentId, subjectId) => {
+    // В режиме public лучше запретить изменения
+    if (ACCESS.mode === "public") {
+      alert("Нет доступа к редактированию.");
+      return;
+    }
+
     const current = getLastGrade(grades, studentId, subjectId);
     const defaultValue = current ? String(current.value) : "";
     const input = window.prompt("Новая оценка (2–5):", defaultValue);
@@ -43,6 +53,11 @@ function App() {
   };
 
   const handleAddNote = (studentId) => {
+    if (ACCESS.mode === "public") {
+      alert("Нет доступа к добавлению заметок.");
+      return;
+    }
+
     const text = window.prompt("Новая заметка по ученику:");
     if (!text || !text.trim()) return;
 
@@ -56,6 +71,11 @@ function App() {
   };
 
   const handleChangeDebtStatus = (debtId) => {
+    if (ACCESS.mode === "public") {
+      alert("Нет доступа к изменению статуса.");
+      return;
+    }
+
     updateState((prev) => ({
       ...prev,
       debts: prev.debts.map((d) => {
@@ -71,6 +91,13 @@ function App() {
 
   const filteredStudents = useMemo(() => {
     let list = [...students];
+
+    // В режиме "ученик" показываем только его самого
+    if (ACCESS.mode === "student" && ACCESS.studentId) {
+      return list.filter((st) => st.id === ACCESS.studentId);
+    }
+
+    // В public / admin можно фильтровать
     const s = search.trim().toLowerCase();
 
     if (s) {
@@ -96,37 +123,57 @@ function App() {
     return list;
   }, [students, debts, search, onlyWithDebts, subjectFilter]);
 
-  const selectedStudent = useMemo(
-    () => students.find((s) => s.id === selectedStudentId) || null,
-    [students, selectedStudentId]
-  );
+  const selectedStudent = useMemo(() => {
+    if (ACCESS.mode === "student" && ACCESS.studentId) {
+      return students.find((s) => s.id === ACCESS.studentId) || null;
+    }
+    return students.find((s) => s.id === selectedStudentId) || null;
+  }, [students, selectedStudentId]);
+
+  const isStudentMode = ACCESS.mode === "student";
+  const isAdminMode = ACCESS.mode === "admin";
 
   return (
     <div className="app">
       <header className="app-header">
         <div>
           <h1>Классный журнал</h1>
-          <p className="app-subtitle">Мини-панель для классного руководителя</p>
+          <p className="app-subtitle">
+            {isAdminMode
+              ? "Режим классного руководителя"
+              : isStudentMode
+              ? "Индивидуальный доступ ученика"
+              : "Просмотр без прав редактирования"}
+          </p>
         </div>
       </header>
 
       <div className="app-layout">
         <aside className="sidebar">
-          <FiltersPanel
-            subjects={subjects}
-            search={search}
-            onSearchChange={setSearch}
-            onlyWithDebts={onlyWithDebts}
-            onToggleDebts={setOnlyWithDebts}
-            subjectFilter={subjectFilter}
-            onSubjectFilterChange={setSubjectFilter}
-          />
-          <StudentsList
-            students={filteredStudents}
-            debts={debts}
-            selectedStudentId={selectedStudentId}
-            onSelect={setSelectedStudentId}
-          />
+          {/* В режиме ученика список и фильтры не показываем */}
+          {isStudentMode ? (
+            <div className="empty">
+              Индивидуальный доступ. Список класса скрыт.
+            </div>
+          ) : (
+            <>
+              <FiltersPanel
+                subjects={subjects}
+                search={search}
+                onSearchChange={setSearch}
+                onlyWithDebts={onlyWithDebts}
+                onToggleDebts={setOnlyWithDebts}
+                subjectFilter={subjectFilter}
+                onSubjectFilterChange={setSubjectFilter}
+              />
+              <StudentsList
+                students={filteredStudents}
+                debts={debts}
+                selectedStudentId={selectedStudentId}
+                onSelect={setSelectedStudentId}
+              />
+            </>
+          )}
         </aside>
 
         <main className="details">
