@@ -1,11 +1,84 @@
 const { useState, useEffect, useMemo } = React;
 
-const ACCESS = getAccessContext();
+/**
+ * Условная "таблица пользователей".
+ * Здесь:
+ * - один учитель (admin)
+ * - несколько учеников (student), привязанных к studentId
+ *
+ * Логины/пароли можешь поменять как хочешь.
+ */
+const ACCOUNTS = [
+  { login: "teacher", password: "1234", mode: "admin", studentId: null },
 
-function App() {
-  const [state, setState] = useState(loadInitialState);
+  { login: "zakar", password: "1111", mode: "student", studentId: 1 },
+  { login: "zakhar", password: "1111", mode: "student", studentId: 2 },
+  { login: "konst", password: "1111", mode: "student", studentId: 3 },
+  { login: "kuzin", password: "1111", mode: "student", studentId: 4 },
+  { login: "podor", password: "1111", mode: "student", studentId: 5 },
+  { login: "salam", password: "1111", mode: "student", studentId: 6 },
+  { login: "fomin", password: "1111", mode: "student", studentId: 7 },
+  { login: "brod",  password: "1111", mode: "student", studentId: 8 },
+  { login: "gol",   password: "1111", mode: "student", studentId: 9 },
+  { login: "lask",  password: "1111", mode: "student", studentId: 10 }
+];
+
+/**
+ * Стартовый экран логина
+ */
+function LoginScreen({ onLogin }) {
+  const [login, setLogin] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onLogin(login.trim(), password.trim());
+  };
+
+  return (
+    <div className="login-screen">
+      <div className="login-card">
+        <h1 className="login-title">Классный журнал</h1>
+        <p className="login-subtitle">
+          Вход для классного руководителя и учеников.
+        </p>
+
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            className="input"
+            placeholder="Логин"
+            value={login}
+            onChange={(e) => setLogin(e.target.value)}
+          />
+          <input
+            type="password"
+            className="input"
+            placeholder="Пароль"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
+          <button type="submit" className="btn btn-primary" style={{ width: "100%" }}>
+            Войти
+          </button>
+        </form>
+
+        <div className="login-footer">
+          Учитель: <b>teacher / 1234</b><br />
+          (логины и пароли можно поменять в <code>app.js</code>)
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Основное приложение журнала (то, что у тебя было, плюс учёт auth)
+ */
+function JournalApp({ state, setState, auth, onLogout }) {
   const [selectedStudentId, setSelectedStudentId] = useState(
-    ACCESS.mode === "student" ? ACCESS.studentId : null
+    auth.mode === "student" ? auth.studentId : null
   );
   const [search, setSearch] = useState("");
   const [onlyWithDebts, setOnlyWithDebts] = useState(false);
@@ -17,6 +90,9 @@ function App() {
     saveState(state);
   }, [state]);
 
+  const isAdminMode = auth.mode === "admin";
+  const isStudentMode = auth.mode === "student";
+
   const updateState = (updater) => {
     setState((prev) => {
       const next = typeof updater === "function" ? updater(prev) : updater;
@@ -25,9 +101,8 @@ function App() {
   };
 
   const handleEditGrade = (studentId, subjectId) => {
-    // В режиме public лучше запретить изменения
-    if (ACCESS.mode === "public") {
-      alert("Нет доступа к редактированию.");
+    if (!isAdminMode) {
+      alert("Редактирование оценок доступно только учителю.");
       return;
     }
 
@@ -53,8 +128,8 @@ function App() {
   };
 
   const handleAddNote = (studentId) => {
-    if (ACCESS.mode === "public") {
-      alert("Нет доступа к добавлению заметок.");
+    if (!isAdminMode) {
+      alert("Добавлять заметки может только учитель.");
       return;
     }
 
@@ -71,8 +146,8 @@ function App() {
   };
 
   const handleChangeDebtStatus = (debtId) => {
-    if (ACCESS.mode === "public") {
-      alert("Нет доступа к изменению статуса.");
+    if (!isAdminMode) {
+      alert("Изменять статус долга может только учитель.");
       return;
     }
 
@@ -92,12 +167,11 @@ function App() {
   const filteredStudents = useMemo(() => {
     let list = [...students];
 
-    // В режиме "ученик" показываем только его самого
-    if (ACCESS.mode === "student" && ACCESS.studentId) {
-      return list.filter((st) => st.id === ACCESS.studentId);
+    // В режиме ученика он видит только себя
+    if (isStudentMode && auth.studentId) {
+      return list.filter((st) => st.id === auth.studentId);
     }
 
-    // В public / admin можно фильтровать
     const s = search.trim().toLowerCase();
 
     if (s) {
@@ -121,17 +195,14 @@ function App() {
     }
 
     return list;
-  }, [students, debts, search, onlyWithDebts, subjectFilter]);
+  }, [students, debts, search, onlyWithDebts, subjectFilter, auth, isStudentMode]);
 
   const selectedStudent = useMemo(() => {
-    if (ACCESS.mode === "student" && ACCESS.studentId) {
-      return students.find((s) => s.id === ACCESS.studentId) || null;
+    if (isStudentMode && auth.studentId) {
+      return students.find((s) => s.id === auth.studentId) || null;
     }
     return students.find((s) => s.id === selectedStudentId) || null;
-  }, [students, selectedStudentId]);
-
-  const isStudentMode = ACCESS.mode === "student";
-  const isAdminMode = ACCESS.mode === "admin";
+  }, [students, selectedStudentId, auth, isStudentMode]);
 
   return (
     <div className="app">
@@ -141,16 +212,16 @@ function App() {
           <p className="app-subtitle">
             {isAdminMode
               ? "Режим классного руководителя"
-              : isStudentMode
-              ? "Индивидуальный доступ ученика"
-              : "Просмотр без прав редактирования"}
+              : "Индивидуальный доступ ученика"}
           </p>
         </div>
+        <button className="btn" onClick={onLogout}>
+          Выйти
+        </button>
       </header>
 
       <div className="app-layout">
         <aside className="sidebar">
-          {/* В режиме ученика список и фильтры не показываем */}
           {isStudentMode ? (
             <div className="empty">
               Индивидуальный доступ. Список класса скрыт.
@@ -193,6 +264,46 @@ function App() {
   );
 }
 
+/**
+ * Обёртка над приложением: здесь логин / выбор режима
+ */
+function AppWrapper() {
+  const [state, setState] = useState(loadInitialState);
+  const [auth, setAuth] = useState(null);
+
+  useEffect(() => {
+    saveState(state);
+  }, [state]);
+
+  const handleLogin = (login, password) => {
+    const acc = ACCOUNTS.find(
+      (a) => a.login === login && a.password === password
+    );
+    if (!acc) {
+      alert("Неверный логин или пароль.");
+      return;
+    }
+    setAuth(acc);
+  };
+
+  const handleLogout = () => {
+    setAuth(null);
+  };
+
+  if (!auth) {
+    return <LoginScreen onLogin={handleLogin} />;
+  }
+
+  return (
+    <JournalApp
+      state={state}
+      setState={setState}
+      auth={auth}
+      onLogout={handleLogout}
+    />
+  );
+}
+
 const rootEl = document.getElementById("root");
 const root = ReactDOM.createRoot(rootEl);
-root.render(<App />);
+root.render(<AppWrapper />);
