@@ -86,3 +86,60 @@ body {
   color: #999;
 }
 
+:root {
+  --glass-bg-main: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.9),
+    rgba(241, 245, 249, 0.82)
+  );
+  --glass-bg-soft: linear-gradient(
+    135deg,
+    rgba(248, 250, 252, 0.95),
+    rgba(226, 232, 240, 0.88)
+  );
+  --glass-border: rgba(255, 255, 255, 0.8);
+  --glass-ring: rgba(148, 163, 184, 0.5);
+  --glass-shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.18);
+  --glass-shadow-chip: 0 8px 24px rgba(15, 23, 42, 0.22);
+  --glass-shadow-thin: 0 0 0 1px rgba(148, 163, 184, 0.2);
+
+  --color-bg-main: radial-gradient(
+    circle at 0% 0%,
+    #dbeafe 0,
+    #f9fafb 35%,
+    #e5e7eb 100%
+  );
+  --color-text-main: #0f172a;
+  --color-text-muted: #6b7280;
+  --color-accent: #2563eb;
+  --color-accent-soft: #dbeafe;
+  --color-danger: #ef4444;
+  --radius-xl: 18px;
+  --radius-lg: 12px;
+  --radius-md: 8px;
+
+  --transition-fast: 0.15s ease;
+  --transition-snap: 0.1s ease-out;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    "Segoe UI", sans-serif;
+  background: var(--color-bg-main);
+  color: var(--color-text-main);
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  padding: 18px;
+  box-sizing: border-box;
+}
