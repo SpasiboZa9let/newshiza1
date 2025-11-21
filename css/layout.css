@@ -1,12 +1,17 @@
 /* Основная оболочка журнала */
 
-.app-shell {
+..app-shell {
   width: 100%;
   max-width: 1220px;
-  min-height: 640px;
+  min-height: calc(100vh - 40px);
   display: flex;
   gap: 14px;
+
+  /* вот эти две строки — ключевые */
+  margin: 20px auto;        /* центрируем по горизонтали и даём отступ сверху/снизу */
+  align-items: flex-start;  /* чтобы правая колонка не тянулась по высоте sidebar */
 }
+
 
 /* Левая стеклянная колонка (sidebar) + правая */
 
@@ -65,4 +70,12 @@
 .app-header-subtitle {
   font-size: 11px;
   color: var(--color-text-muted);
+}
+
+.details {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 0;      /* на всякий случай, если вдруг где-то был margin */
 }
