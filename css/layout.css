@@ -1,76 +1,68 @@
-/* Каркас приложения */
-.app {
+/* Основная оболочка журнала */
+
+.app-shell {
+  width: 100%;
+  max-width: 1220px;
+  min-height: 640px;
   display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+  gap: 14px;
 }
 
-/* Шапка */
+/* Левая стеклянная колонка (sidebar) + правая */
+
+.sidebar {
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.details {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Общий стеклянный контейнер (если нужно переиспользовать) */
+
+.glass-card {
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg-main);
+  backdrop-filter: blur(22px) saturate(150%);
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
+  box-shadow: var(--glass-shadow-soft);
+}
+
+/* Верхний бар (если есть логотип / заголовок приложения) */
+
 .app-header {
+  border-radius: var(--radius-xl);
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.95),
+    rgba(239, 246, 255, 0.9)
+  );
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  box-shadow:
+    0 14px 32px rgba(15, 23, 42, 0.18),
+    0 0 0 1px rgba(191, 219, 254, 0.6);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 20px;
-  background: #ffffff;
-  border-bottom: 1px solid #ddd;
 }
 
-.app-header h1 {
-  font-size: 20px;
-  font-weight: 700;
+.app-header-title {
+  font-size: 14px;
+  font-weight: 600;
 }
 
-.app-subtitle {
-  font-size: 13px;
-  color: #666;
-}
-
-/* Основная двухколоночная раскладка */
-.app-layout {
-  display: flex;
-  flex: 1;
-  padding: 16px 20px;
-  gap: 20px;
-  overflow: hidden;
-}
-
-/* Левая колонка */
-.sidebar {
-  width: 320px;
-  max-width: 100%;
-  background: #ffffff;
-  border-radius: 12px;
-  border: 1px solid #ddd;
-  padding: 16px;
-  overflow-y: auto;
-}
-
-/* Правая колонка */
-.details {
-  flex: 1;
-  background: #ffffff;
-  border-radius: 12px;
-  border: 1px solid #ddd;
-  padding: 20px;
-  overflow-y: auto;
-  position: relative;
-}
-
-/* Заглушка справа */
-.placeholder {
-  text-align: center;
-  margin-top: 80px;
-  color: #777;
-}
-
-/* Адаптив */
-@media (max-width: 900px) {
-  .app-layout {
-    flex-direction: column;
-  }
-
-  .sidebar,
-  .details {
-    width: 100%;
-  }
+.app-header-subtitle {
+  font-size: 11px;
+  color: var(--color-text-muted);
 }
