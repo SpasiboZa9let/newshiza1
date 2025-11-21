@@ -306,12 +306,14 @@ function JournalApp({ state, setState, auth, onLogout }) {
 
         <main className="details">
           {isAdminMode && (
-            <GradeEntryPanel
-              students={students}
-              subjects={subjects}
-              onAddGrade={handleQuickAddGrade}
-            />
-          )}
+  <GradeEntryPanel
+    students={students}
+    subjects={subjects}
+    grades={grades}
+    onAddGrade={handleQuickAddGrade}
+  />
+)}
+
 
           <StudentDetails
             student={selectedStudent}
