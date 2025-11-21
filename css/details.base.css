@@ -1,163 +1,162 @@
-/* Хедер ученика и базовые секции */
+/* Вся правая панель — стеклянная карточка */
 
-.details-content {
-  max-width: 100%;
+.details-shell {
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg-main);
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  box-shadow: var(--glass-shadow-soft);
+  padding: 12px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: calc(100vh - 120px);
+  overflow: hidden;
 }
 
-/* Хедер с аватаркой и ФИО */
+.details-scroll {
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.details-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.details-scroll::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.6);
+  border-radius: 999px;
+}
+
+/* Хедер ученика */
 
 .details-header {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 16px;
+  gap: 12px;
+  margin-bottom: 8px;
 }
 
 .details-avatar {
-  width: 72px;
-  height: 72px;
-  background: #e5e5e5;
-  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 0%, #ffffff, #e5e7eb);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.9),
+    0 10px 26px rgba(15, 23, 42, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 26px;
+  font-size: 22px;
   font-weight: 700;
-  color: #444;
+  color: #111827;
 }
 
-.details-header-main {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.details-name {
-  font-size: 18px;
-  font-weight: 700;
-  color: #222;
-}
-
-.details-meta-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  font-size: 13px;
-  color: #666;
-}
-
-.details-class {
-  font-weight: 500;
-}
-
-.details-tag-muted {
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: #f1f1f5;
-  color: #777;
-  font-size: 11px;
-}
-
-/* Сводка по ученику (маленькие карточки) */
-
-.details-summary {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.details-summary-item {
-  background: #ffffff;
-  border-radius: 10px;
-  border: 1px solid #e3e3ea;
-  padding: 8px 10px;
+.details-title-block {
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
-.details-summary-label {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: #888;
-}
-
-.details-summary-value {
+.details-name {
   font-size: 16px;
   font-weight: 600;
-  color: #222;
 }
 
-/* Вкладки */
+.details-meta {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
 
-.details-tabs {
+/* Теги-состояния (есть долги, есть пропуски, режим просмотра/админ и т.п.) */
+
+.details-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-bottom: 10px;
-  border-bottom: 1px solid #e3e3ea;
-  padding-bottom: 4px;
+  margin-left: auto;
+}
+
+.details-tag {
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.6);
+  background: rgba(248, 250, 252, 0.9);
+  font-size: 11px;
+  color: #0f172a;
+}
+
+.details-tag-muted {
+  border-color: rgba(209, 213, 219, 0.8);
+  color: #6b7280;
+}
+
+.details-tag-danger {
+  border-color: rgba(248, 113, 113, 0.9);
+  background: rgba(254, 226, 226, 0.95);
+  color: #991b1b;
+}
+
+/* Сводка (средний балл, долги, пропуски) */
+
+.details-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.details-summary-item {
+  border-radius: var(--radius-lg);
+  padding: 8px 10px;
+  background: var(--glass-bg-soft);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.7);
+}
+
+.details-summary-label {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin-bottom: 2px;
+}
+
+.details-summary-value {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* Табы (оценки / пропуски / долги / заметки) */
+
+.details-tabs {
+  display: flex;
+  gap: 4px;
+  margin: 4px 0 8px;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgba(248, 250, 252, 0.9);
+  box-shadow: var(--glass-shadow-thin);
 }
 
 .details-tab {
+  flex: 1 1 0;
+  border-radius: 999px;
   border: none;
   background: transparent;
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-size: 13px;
+  padding: 5px 8px;
+  font-size: 12px;
   cursor: pointer;
-  color: #555;
-  transition: background 0.15s ease, color 0.15s ease;
-}
-
-.details-tab:hover {
-  background: #f1f1f5;
-  color: #222;
+  color: #4b5563;
+  transition: var(--transition-fast);
 }
 
 .details-tab--active {
-  background: #2f6feb;
-  color: #fff;
-}
-
-/* Область контента вкладок */
-
-.details-tab-content {
-  display: block;
-}
-
-/* Базовые секции для блоков (оценки, пропуски, долги, заметки) */
-
-.details-section {
-  margin-top: 8px;
-}
-
-.details-section:first-child {
-  margin-top: 0;
-}
-
-.details-section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-  gap: 12px;
-}
-
-.details-section-header h3 {
-  font-size: 16px;
-}
-
-.details-section-subtitle {
-  font-size: 12px;
-  color: #777;
-}
-
-/* Общий стиль «пусто» */
-
-.empty {
-  font-size: 13px;
-  color: #777;
+  background: linear-gradient(
+    135deg,
+    rgba(37, 99, 235, 0.98),
+    rgba(29, 78, 216, 0.95)
+  );
+  color: #eff6ff;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.95),
+    0 8px 16px rgba(37, 99, 235, 0.45);
 }
