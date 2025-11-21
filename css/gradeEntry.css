@@ -283,3 +283,73 @@
     background-color: transparent;
   }
 }
+
+/* --- ДОПОЛНИТЕЛЬНЫЕ СТИЛИ ДЛЯ НОВОГО ФУНКЦИОНАЛА --- */
+
+/* Цветная плашка выбранного предмета (рядом с селектом) */
+.grade-entry-subject-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+}
+
+/* Контейнер предмета в select-блоке */
+.grade-entry-subject-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Отображение последней оценки в списке учеников */
+.grade-entry-last-grade {
+  display: block;
+  font-size: 11px;
+  color: #374151;
+  margin-top: 2px;
+}
+
+.grade-entry-last-grade strong {
+  font-weight: 700;
+}
+
+.grade-entry-last-grade-date {
+  font-size: 10px;
+  color: #6b7280;
+  margin-left: 3px;
+}
+
+/* Правки для новой структуры строки */
+.grade-entry-row {
+  justify-content: flex-start;
+}
+
+/* Кнопки «Сегодня / Вчера» уже есть, но добьём hover */
+.grade-entry-date-btn {
+  padding: 4px 8px;
+  font-size: 11px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  cursor: pointer;
+  transition: 0.15s;
+}
+
+.grade-entry-date-btn:hover {
+  background: #e5f0ff;
+  border-color: #2563eb;
+}
+
+/* Чуть лучше подсветка по ховеру на ученика */
+.grade-entry-row:hover {
+  background: #eef3ff;
+}
+
+/* Чтобы подсветка последней оценки не прыгала */
+.grade-entry-student-meta span {
+  display: inline-block;
+}
