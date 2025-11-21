@@ -4,34 +4,138 @@
   max-width: 100%;
 }
 
+/* Хедер с аватаркой и ФИО */
+
 .details-header {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .details-avatar {
-  width: 80px;
-  height: 80px;
+  width: 72px;
+  height: 72px;
   background: #e5e5e5;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 26px;
-  font-weight: bold;
+  font-weight: 700;
+  color: #444;
 }
 
-.details-meta {
+.details-header-main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.details-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #222;
+}
+
+.details-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
   font-size: 13px;
   color: #666;
 }
 
-/* Секции справа */
+.details-class {
+  font-weight: 500;
+}
+
+.details-tag-muted {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #f1f1f5;
+  color: #777;
+  font-size: 11px;
+}
+
+/* Сводка по ученику (маленькие карточки) */
+
+.details-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.details-summary-item {
+  background: #ffffff;
+  border-radius: 10px;
+  border: 1px solid #e3e3ea;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.details-summary-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #888;
+}
+
+.details-summary-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #222;
+}
+
+/* Вкладки */
+
+.details-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #e3e3ea;
+  padding-bottom: 4px;
+}
+
+.details-tab {
+  border: none;
+  background: transparent;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  cursor: pointer;
+  color: #555;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.details-tab:hover {
+  background: #f1f1f5;
+  color: #222;
+}
+
+.details-tab--active {
+  background: #2f6feb;
+  color: #fff;
+}
+
+/* Область контента вкладок */
+
+.details-tab-content {
+  display: block;
+}
+
+/* Базовые секции для блоков (оценки, пропуски, долги, заметки) */
 
 .details-section {
-  margin-top: 22px;
+  margin-top: 8px;
+}
+
+.details-section:first-child {
+  margin-top: 0;
 }
 
 .details-section-header {
@@ -48,5 +152,12 @@
 
 .details-section-subtitle {
   font-size: 12px;
+  color: #777;
+}
+
+/* Общий стиль «пусто» */
+
+.empty {
+  font-size: 13px;
   color: #777;
 }
