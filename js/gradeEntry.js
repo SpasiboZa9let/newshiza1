@@ -10,6 +10,16 @@ const { useState, useMemo } = React;
  * - subjects: список предметов [{id, name}]
  * - onAddGrade(date, subjectId, studentId, value)
  */
+
+// Цветовая маркировка предметов (по id из subjects.js)
+const SUBJECT_COLOR_MAP = {
+  1: "#2563eb", // Алгебра — синий
+  13: "#ef4444", // Русский язык — красный
+  5: "#16a34a", // Английский — зелёный
+  9: "#7c3aed", // Литература — фиолетовый
+  11: "#1d4ed8", // ОБЖ — тёмно-синий
+};
+
 function GradeEntryPanel({ students, subjects, onAddGrade }) {
   const [date, setDate] = useState(() => {
     const d = new Date();
@@ -24,6 +34,7 @@ function GradeEntryPanel({ students, subjects, onAddGrade }) {
   });
 
   const [search, setSearch] = useState("");
+  const [selectedGrade, setSelectedGrade] = useState(null); // 2/3/4/5
 
   const selectedSubject = useMemo(() => {
     const idNum = Number(subjectId);
@@ -53,7 +64,7 @@ function GradeEntryPanel({ students, subjects, onAddGrade }) {
     setDate(`${d.getFullYear()}-${m}-${day}`);
   };
 
-  const handleClickGrade = (studentId, value, e) => {
+  const handleClickStudent = (studentId, e) => {
     if (!date) {
       alert("Сначала выбери дату.");
       return;
@@ -62,18 +73,23 @@ function GradeEntryPanel({ students, subjects, onAddGrade }) {
       alert("Сначала выбери предмет.");
       return;
     }
+    if (!selectedGrade) {
+      alert("Сначала выбери оценку наверху.");
+      return;
+    }
 
-    const num = Number(value);
     const subjNum = Number(subjectId);
+    const num = Number(selectedGrade);
 
     onAddGrade(date, subjNum, studentId, num);
 
-    // анимация «вспышки» по кнопке
-    const btn = e.currentTarget;
-    btn.classList.remove("flash");
+    // анимация «вспышки» по строке
+    const row = e.currentTarget;
+    row.classList.remove("flash");
     // перезапуск анимации
-    void btn.offsetWidth;
-    btn.classList.add("flash");
+    // eslint-disable-next-line no-unused-expressions
+    void row.offsetWidth;
+    row.classList.add("flash");
   };
 
   if (!subjects || subjects.length === 0) {
@@ -91,86 +107,127 @@ function GradeEntryPanel({ students, subjects, onAddGrade }) {
     );
   }
 
+  const subjectColor =
+    selectedSubject && SUBJECT_COLOR_MAP[selectedSubject.id]
+      ? SUBJECT_COLOR_MAP[selectedSubject.id]
+      : "#4b5563";
+
   return (
     <section className="grade-entry">
       <div className="grade-entry-header">
-        <div>
-          <h2 className="grade-entry-title">Быстрое выставление оценок</h2>
-          <p className="grade-entry-subtitle">
-            1) выбери дату и предмет, 2) кликай по ученикам.
-          </p>
+        <div className="grade-entry-header-main">
+          <div>
+            <h2 className="grade-entry-title">Быстрое выставление оценок</h2>
+            <p className="grade-entry-subtitle">
+              1) выбери дату, предмет и оценку, 2) кликай по ученикам.
+            </p>
+          </div>
+
+          <div className="grade-entry-date-block">
+            <label className="grade-entry-label">
+              <span>Дата</span>
+              <input
+                type="date"
+                className="grade-entry-date-input"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+              />
+            </label>
+            <div className="grade-entry-date-buttons">
+              <button
+                type="button"
+                className="btn btn-light grade-entry-small-btn"
+                onClick={handleSetToday}
+              >
+                Сегодня
+              </button>
+              <button
+                type="button"
+                className="btn btn-light grade-entry-small-btn"
+                onClick={handleSetYesterday}
+              >
+                Вчера
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div className="grade-entry-date-block">
+        <div className="grade-entry-controls">
           <label className="grade-entry-label">
-            <span>Дата</span>
+            <span>Предмет</span>
+            <select
+              className="grade-entry-select"
+              value={subjectId}
+              onChange={(e) => {
+                setSubjectId(e.target.value);
+              }}
+            >
+              {subjects.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="grade-entry-label grade-entry-search">
+            <span>Фильтр по ученикам</span>
             <input
-              type="date"
-              className="grade-entry-date-input"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
+              type="text"
+              className="grade-entry-search-input"
+              placeholder="Начни вводить фамилию..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
             />
           </label>
-          <div className="grade-entry-date-buttons">
-            <button
-              type="button"
-              className="btn btn-light grade-entry-small-btn"
-              onClick={handleSetToday}
-            >
-              Сегодня
-            </button>
-            <button
-              type="button"
-              className="btn btn-light grade-entry-small-btn"
-              onClick={handleSetYesterday}
-            >
-              Вчера
-            </button>
-          </div>
-        </div>
-      </div>
 
-      <div className="grade-entry-controls">
-        <label className="grade-entry-label">
-          <span>Предмет</span>
-          <select
-            className="grade-entry-select"
-            value={subjectId}
-            onChange={(e) => setSubjectId(e.target.value)}
-          >
-            {subjects.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
-              </option>
+          <div className="grade-entry-grade-bar">
+            <span className="grade-entry-label-inline">Оценка</span>
+            {[2, 3, 4, 5].map((v) => (
+              <button
+                key={v}
+                type="button"
+                className={
+                  "grade-entry-grade-pill" +
+                  (selectedGrade === v
+                    ? " grade-entry-grade-pill--active"
+                    : "")
+                }
+                onClick={() => setSelectedGrade(v)}
+              >
+                {v}
+              </button>
             ))}
-          </select>
-        </label>
-
-        <label className="grade-entry-label grade-entry-search">
-          <span>Фильтр по ученикам</span>
-          <input
-            type="text"
-            className="grade-entry-search-input"
-            placeholder="Начни вводить фамилию..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </label>
-
-        {selectedSubject && (
-          <div className="grade-entry-pill">
-            {selectedSubject.name}
           </div>
-        )}
 
-        <div className="grade-entry-count">
-          Ученики: {filteredStudents.length} из {students.length}
+          {selectedSubject && (
+            <div
+              className="grade-entry-pill"
+              style={{
+                borderColor: subjectColor,
+                color: subjectColor,
+              }}
+            >
+              <span className="grade-entry-pill-dot" />
+              <span className="grade-entry-pill-text">
+                {selectedSubject.name}
+              </span>
+            </div>
+          )}
+
+          <div className="grade-entry-count">
+            Ученики: {filteredStudents.length} из {students.length}
+          </div>
         </div>
       </div>
 
       <div className="grade-entry-list">
         {filteredStudents.map((st) => (
-          <div key={st.id} className="grade-entry-row">
+          <div
+            key={st.id}
+            className="grade-entry-row"
+            onClick={(e) => handleClickStudent(st.id, e)}
+          >
             <div className="grade-entry-student">
               <div className="grade-entry-avatar">
                 <span>
@@ -185,19 +242,6 @@ function GradeEntryPanel({ students, subjects, onAddGrade }) {
                   {st.classLabel || "Класс не указан"}
                 </div>
               </div>
-            </div>
-
-            <div className="grade-entry-actions">
-              {[2, 3, 4, 5].map((v) => (
-                <button
-                  key={v}
-                  type="button"
-                  className={`grade-entry-btn grade-entry-btn-${v}`}
-                  onClick={(e) => handleClickGrade(st.id, v, e)}
-                >
-                  {v}
-                </button>
-              ))}
             </div>
           </div>
         ))}
