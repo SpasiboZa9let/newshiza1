@@ -1,24 +1,59 @@
-/* Панель быстрого выставления оценок */
+/* ПАНЕЛЬ БЫСТРОГО ВЫСТАВЛЕНИЯ ОЦЕНКОВ — LIQUID GLASS */
 
+/* Контейнер панели */
 .grade-entry {
   margin-bottom: 16px;
-  border: 1px dashed #d0d0d0;
-  background: #ffffff;
-  border-radius: 10px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.82),
+      rgba(248, 250, 252, 0.65)
+    );
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  box-shadow:
+    0 18px 40px rgba(15, 23, 42, 0.18),
+    0 0 0 1px rgba(148, 163, 184, 0.12);
   max-height: 420px;
-  overflow: auto;
+  overflow: hidden;
   position: relative;
+  font-size: 13px;
 }
 
-/* STICKY-шапка */
+/* Внутренний скролл под шапкой */
+.grade-entry-list {
+  padding: 6px 10px 10px;
+  max-height: 320px;
+  overflow-y: auto;
+}
 
+/* Скроллбар — тонкий, ненавязчивый */
+.grade-entry-list::-webkit-scrollbar {
+  width: 6px;
+}
+.grade-entry-list::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.5);
+  border-radius: 999px;
+}
+.grade-entry-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* STICKY-шапка — тоже стекло, чуть плотнее */
 .grade-entry-header {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: #ffffff;
   padding: 10px 14px 8px;
-  border-bottom: 1px solid #e5e7eb;
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.96),
+    rgba(241, 245, 249, 0.9)
+  );
+  border-bottom: 1px solid rgba(148, 163, 184, 0.35);
 }
 
 .grade-entry-header-main {
@@ -33,11 +68,12 @@
   font-size: 15px;
   font-weight: 600;
   margin-bottom: 2px;
+  color: #0f172a;
 }
 
 .grade-entry-subtitle {
   font-size: 12px;
-  color: #6b7280;
+  color: #64748b;
 }
 
 /* Дата + кнопки Сегодня / Вчера */
@@ -58,28 +94,62 @@
 }
 
 .grade-entry-date-input {
-  padding: 5px 8px;
+  padding: 5px 9px;
   font-size: 12px;
-  border-radius: 6px;
-  border: 1px solid #d1d5db;
-  background: #f9fafb;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  background: radial-gradient(
+    circle at 0% 0%,
+    rgba(255, 255, 255, 0.95),
+    rgba(241, 245, 249, 0.8)
+  );
+  color: #0f172a;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.6);
+  transition: 0.16s ease;
 }
 
 .grade-entry-date-input:focus {
   outline: none;
   border-color: #2563eb;
-  background: #ffffff;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.9),
+    0 0 0 2px rgba(37, 99, 235, 0.3);
 }
 
-.grade-entry-date-buttons {
+.grade-entry-date-buttons,
+.grade-entry-date-buttons .grade-entry-small-btn {
   display: flex;
   gap: 6px;
 }
 
-.grade-entry-small-btn {
-  padding: 4px 8px;
+.grade-entry-small-btn,
+.grade-entry-date-btn {
+  padding: 4px 10px;
   font-size: 11px;
   border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.6);
+  background: radial-gradient(
+    circle at 0% 0%,
+    rgba(255, 255, 255, 0.95),
+    rgba(226, 232, 240, 0.85)
+  );
+  color: #0f172a;
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+.grade-entry-small-btn:hover,
+.grade-entry-date-btn:hover {
+  border-color: #2563eb;
+  background: radial-gradient(
+    circle at 0% 0%,
+    rgba(239, 246, 255, 1),
+    rgba(219, 234, 254, 0.9)
+  );
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.9),
+    0 6px 18px rgba(37, 99, 235, 0.26);
+  transform: translateY(-0.5px);
 }
 
 /* Нижняя часть шапки: предмет, поиск, полка оценок */
@@ -91,20 +161,65 @@
   align-items: center;
 }
 
-.grade-entry-select {
+/* Select в стиле стекла */
+
+.grade-entry-select,
+.grade-entry-subject-select {
   min-width: 170px;
-  padding: 5px 8px;
-  border-radius: 6px;
-  border: 1px solid #d1d5db;
+  padding: 6px 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
   font-size: 12px;
-  background: #f9fafb;
+  background: linear-gradient(
+    135deg,
+    rgba(248, 250, 252, 0.95),
+    rgba(226, 232, 240, 0.85)
+  );
+  color: #0f172a;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: 0.15s ease;
 }
 
-.grade-entry-select:focus {
+.grade-entry-select:focus,
+.grade-entry-subject-select:focus {
   outline: none;
   border-color: #2563eb;
-  background: #ffffff;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.9),
+    0 0 0 2px rgba(37, 99, 235, 0.3);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.98),
+    rgba(226, 232, 240, 0.95)
+  );
 }
+
+/* Ряд для селекта + цветной бейдж предмета */
+
+.grade-entry-subject-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Плашка предмета — стеклянный чип */
+
+.grade-entry-subject-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.5),
+    0 6px 12px rgba(15, 23, 42, 0.28);
+}
+
+/* Поиск по ученикам */
 
 .grade-entry-search {
   flex: 1 1 160px;
@@ -112,17 +227,34 @@
 
 .grade-entry-search-input {
   width: 100%;
-  padding: 5px 8px;
-  border-radius: 6px;
-  border: 1px solid #d1d5db;
+  padding: 6px 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
   font-size: 12px;
-  background: #f9fafb;
+  background: linear-gradient(
+    135deg,
+    rgba(248, 250, 252, 0.95),
+    rgba(226, 232, 240, 0.85)
+  );
+  color: #0f172a;
+  transition: 0.15s ease;
+}
+
+.grade-entry-search-input::placeholder {
+  color: #9ca3af;
 }
 
 .grade-entry-search-input:focus {
   outline: none;
   border-color: #2563eb;
-  background: #ffffff;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.9),
+    0 0 0 2px rgba(37, 99, 235, 0.3);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.98),
+    rgba(226, 232, 240, 0.95)
+  );
 }
 
 /* Горизонтальная полка оценок */
@@ -143,85 +275,73 @@
 .grade-entry-grade-pill {
   min-width: 30px;
   height: 26px;
-  padding: 0 6px;
+  padding: 0 8px;
   border-radius: 999px;
-  border: 1px solid #d1d5db;
-  background: #f9fafb;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  background: radial-gradient(
+    circle at 0% 0%,
+    rgba(255, 255, 255, 0.98),
+    rgba(241, 245, 249, 0.9)
+  );
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.12s ease, border-color 0.12s ease,
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease,
+    box-shadow 0.12s ease,
     transform 0.08s ease;
 }
 
 .grade-entry-grade-pill:hover {
-  background: #e5f0ff;
+  background: radial-gradient(
+    circle at 0% 0%,
+    rgba(239, 246, 255, 1),
+    rgba(219, 234, 254, 0.95)
+  );
   border-color: #2563eb;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.9),
+    0 6px 18px rgba(37, 99, 235, 0.26);
 }
 
 .grade-entry-grade-pill--active {
-  background: #2563eb;
-  border-color: #1d4ed8;
+  background: linear-gradient(
+    135deg,
+    #2563eb,
+    #1d4ed8
+  );
+  border-color: rgba(191, 219, 254, 0.9);
   color: #ffffff;
   transform: translateY(-1px);
 }
 
-/* Плашка предмета с цветовой маркировкой */
-
-.grade-entry-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  border: 1px solid #d1d5db;
-  background: #f9fafb;
-  font-size: 11px;
-  white-space: nowrap;
-}
-
-.grade-entry-pill-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 999px;
-  background: currentColor;
-}
-
-.grade-entry-pill-text {
-  max-width: 220px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.grade-entry-count {
-  margin-left: auto;
-  font-size: 11px;
-  color: #6b7280;
-}
-
 /* Список учеников */
-
-.grade-entry-list {
-  padding: 6px 10px 10px;
-}
 
 .grade-entry-row {
   display: flex;
   align-items: center;
-  padding: 6px 4px;
-  border-radius: 8px;
+  padding: 7px 4px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: background 0.12s ease, transform 0.08s ease;
+  transition:
+    background 0.12s ease,
+    transform 0.08s ease,
+    box-shadow 0.12s ease;
 }
 
 .grade-entry-row + .grade-entry-row {
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid rgba(241, 245, 249, 0.9);
 }
 
 .grade-entry-row:hover {
-  background: #f3f4ff;
+  background: rgba(239, 246, 255, 0.85);
+  box-shadow:
+    0 6px 14px rgba(15, 23, 42, 0.18);
+  transform: translateY(-1px);
 }
+
+/* Аватар + инфа */
 
 .grade-entry-student {
   display: flex;
@@ -233,13 +353,20 @@
   width: 32px;
   height: 32px;
   border-radius: 999px;
-  background: #e5e7eb;
+  background: radial-gradient(
+    circle at 30% 0%,
+    #ffffff,
+    #e5e7eb
+  );
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.9),
+    0 4px 10px rgba(15, 23, 42, 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 13px;
   font-weight: 600;
-  color: #374151;
+  color: #111827;
 }
 
 .grade-entry-student-info {
@@ -251,6 +378,7 @@
 .grade-entry-student-name {
   font-size: 13px;
   font-weight: 500;
+  color: #0f172a;
 }
 
 .grade-entry-student-meta {
@@ -258,59 +386,13 @@
   color: #6b7280;
 }
 
-/* Пустой результат */
+/* Последняя оценка по выбранному предмету */
 
-.grade-entry-empty {
-  padding: 14px 4px 6px;
-  font-size: 12px;
-  color: #6b7280;
-}
-
-/* Анимация "вспышки" после клика */
-
-.grade-entry-row.flash {
-  animation: flashPulse 0.35s ease-out;
-}
-
-@keyframes flashPulse {
-  0% {
-    background-color: #c9ffcc;
-  }
-  70% {
-    background-color: #f3f4ff;
-  }
-  100% {
-    background-color: transparent;
-  }
-}
-
-/* --- ДОПОЛНИТЕЛЬНЫЕ СТИЛИ ДЛЯ НОВОГО ФУНКЦИОНАЛА --- */
-
-/* Цветная плашка выбранного предмета (рядом с селектом) */
-.grade-entry-subject-pill {
-  display: inline-flex;
-  align-items: center;
-  padding: 3px 10px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 600;
-  color: #fff;
-  white-space: nowrap;
-}
-
-/* Контейнер предмета в select-блоке */
-.grade-entry-subject-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-/* Отображение последней оценки в списке учеников */
 .grade-entry-last-grade {
   display: block;
   font-size: 11px;
-  color: #374151;
-  margin-top: 2px;
+  color: #0f172a;
+  margin-top: 1px;
 }
 
 .grade-entry-last-grade strong {
@@ -323,33 +405,28 @@
   margin-left: 3px;
 }
 
-/* Правки для новой структуры строки */
-.grade-entry-row {
-  justify-content: flex-start;
+/* Пустой результат */
+
+.grade-entry-empty {
+  padding: 14px 4px 6px;
+  font-size: 12px;
+  color: #6b7280;
 }
 
-/* Кнопки «Сегодня / Вчера» уже есть, но добьём hover */
-.grade-entry-date-btn {
-  padding: 4px 8px;
-  font-size: 11px;
-  border-radius: 999px;
-  border: 1px solid #d1d5db;
-  background: #f9fafb;
-  cursor: pointer;
-  transition: 0.15s;
+/* Анимация "вспышки" после клика — в стеклянной гамме */
+
+.grade-entry-row.flash {
+  animation: flashPulseGlass 0.38s ease-out;
 }
 
-.grade-entry-date-btn:hover {
-  background: #e5f0ff;
-  border-color: #2563eb;
-}
-
-/* Чуть лучше подсветка по ховеру на ученика */
-.grade-entry-row:hover {
-  background: #eef3ff;
-}
-
-/* Чтобы подсветка последней оценки не прыгала */
-.grade-entry-student-meta span {
-  display: inline-block;
+@keyframes flashPulseGlass {
+  0% {
+    background-color: rgba(187, 247, 208, 0.95);
+  }
+  60% {
+    background-color: rgba(239, 246, 255, 0.9);
+  }
+  100% {
+    background-color: transparent;
+  }
 }
