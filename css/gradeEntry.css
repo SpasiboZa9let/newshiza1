@@ -2,178 +2,139 @@
 
 .grade-entry {
   margin-bottom: 16px;
-  border: 1px dashed #d0d0d0;
+  border: 1px solid #e0e0e0;
   background: #fafcff;
   border-radius: 10px;
-  padding: 12px 14px 10px;
+  padding: 14px 16px 12px;
 }
 
-/* Шапка */
+/* Заголовок */
 
 .grade-entry-header {
   display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  align-items: center;
+  flex-direction: column;
+  gap: 4px;
   margin-bottom: 10px;
 }
 
 .grade-entry-title {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
-  margin-bottom: 4px;
+  color: #222;
 }
 
 .grade-entry-subtitle {
-  font-size: 13px;
+  font-size: 12px;
   color: #666;
 }
 
-.grade-entry-date-block {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  align-items: flex-end;
-}
-
-.grade-entry-label {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-size: 12px;
-  color: #555;
-}
-
-.grade-entry-date-input {
-  font-size: 13px;
-  padding: 6px 8px;
-  border-radius: 6px;
-  border: 1px solid #d0d0d0;
-  background: #ffffff;
-}
-
-.grade-entry-date-buttons {
-  display: flex;
-  gap: 6px;
-}
-
-.grade-entry-small-btn {
-  padding: 4px 8px;
-  font-size: 12px;
-}
-
-/* Блок с контролами */
+/* Верхняя панель управления */
 
 .grade-entry-controls {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px 14px;
-  align-items: flex-end;
+  gap: 10px;
   margin-bottom: 10px;
 }
 
-.grade-entry-select {
-  min-width: 220px;
+.grade-entry-field {
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
+}
+
+.grade-entry-field--grow {
+  flex: 1 1 180px;
+}
+
+.grade-entry-label {
+  font-size: 11px;
+  color: #777;
+  margin-bottom: 3px;
+}
+
+.grade-entry-input {
   font-size: 13px;
   padding: 6px 8px;
-  border-radius: 6px;
-  border: 1px solid #d0d0d0;
-  background: #ffffff;
 }
 
-.grade-entry-search-input {
-  min-width: 180px;
-  font-size: 13px;
-  padding: 6px 8px;
-  border-radius: 6px;
-  border: 1px solid #d0d0d0;
-  background: #ffffff;
+/* Подпись */
+
+.grade-entry-legend {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 11px;
+  color: #555;
+  margin-bottom: 8px;
 }
 
-.grade-entry-search {
-  flex: 1;
-  min-width: 180px;
-}
-
-.grade-entry-pill {
-  padding: 5px 10px;
-  border-radius: 999px;
-  background: #e7f1ff;
-  font-size: 12px;
-  color: #22539b;
-  max-width: 260px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.grade-entry-count {
-  margin-left: auto;
-  font-size: 12px;
-  color: #666;
+.grade-entry-legend-date strong {
+  font-weight: 600;
 }
 
 /* Список учеников */
 
-.grade-entry-list {
-  border-radius: 8px;
-  border: 1px solid #e2e6f0;
-  background: #ffffff;
-  max-height: 340px;
+.grade-entry-students {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 260px;
   overflow-y: auto;
+  padding-right: 4px;
 }
 
 .grade-entry-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 6px 10px;
-  gap: 10px;
-  border-bottom: 1px solid #f1f1f4;
-}
-
-.grade-entry-row:last-child {
-  border-bottom: none;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #ededf5;
 }
 
 .grade-entry-row:hover {
-  background: #f7f9ff;
+  border-color: #c2d5ff;
+  background: #f5f7ff;
 }
 
-/* Левая часть — ученик */
+/* Левая часть: ученик */
 
 .grade-entry-student {
   display: flex;
   align-items: center;
   gap: 8px;
   min-width: 0;
-  flex: 1;
 }
 
 .grade-entry-avatar {
-  width: 30px;
-  height: 30px;
-  border-radius: 999px;
-  background: #e4e7f5;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #eef2ff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 13px;
   font-weight: 600;
-  color: #2c397a;
-  flex-shrink: 0;
+  color: #3246a8;
 }
 
 .grade-entry-student-info {
-  min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .grade-entry-student-name {
   font-size: 13px;
   font-weight: 500;
+  color: #222;
+  max-width: 210px;
   white-space: nowrap;
-  text-overflow: ellipsis;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .grade-entry-student-meta {
@@ -181,56 +142,33 @@
   color: #777;
 }
 
-/* Правая часть — кнопки оценок */
+/* Кнопки оценок */
 
-.grade-entry-actions {
+.grade-entry-buttons {
   display: flex;
-  gap: 4px;
-  flex-shrink: 0;
+  gap: 6px;
 }
 
 .grade-entry-btn {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  border: 1px solid #d0d0d0;
-  background: #f1f1f1;
-  font-size: 14px;
+  min-width: 34px;
+  padding: 6px 0;
+  font-size: 13px;
   font-weight: 600;
-  cursor: pointer;
-  transition:
-    background-color 0.12s ease-out,
-    border-color 0.12s ease-out,
-    transform 0.07s ease-out;
+  border-radius: 999px;
+  border: 1px solid #d0d4e6;
+  background: #f4f6ff;
 }
 
 .grade-entry-btn:hover {
-  transform: translateY(-1px);
+  background: #e3e7ff;
+  border-color: #b9c5ff;
 }
 
-/* Лёгкая цветовая дифференциация оценок */
-
-.grade-entry-btn-2 {
-  background: #ffeaea;
-  border-color: #f2b1b1;
+.grade-entry-btn:active {
+  transform: translateY(1px);
 }
 
-.grade-entry-btn-3 {
-  background: #fff8e5;
-  border-color: #f2d5a6;
-}
-
-.grade-entry-btn-4 {
-  background: #ecf9ff;
-  border-color: #9ec9e5;
-}
-
-.grade-entry-btn-5 {
-  background: #e8ffe9;
-  border-color: #98d5a3;
-}
-
-/* анимация "вспышки" после клика */
+/* анимация "вспышки" */
 
 .grade-entry-btn.flash {
   animation: flashPulse 0.35s ease-out;
@@ -238,42 +176,29 @@
 
 @keyframes flashPulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(88, 189, 105, 0.6);
-    transform: scale(1);
+    background-color: #c9ffcc;
   }
-  60% {
-    box-shadow: 0 0 0 6px rgba(88, 189, 105, 0);
-    transform: scale(1.04);
+  70% {
+    background-color: #f4f6ff;
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(88, 189, 105, 0);
-    transform: scale(1);
+    background-color: #f4f6ff;
   }
 }
 
-/* Пустое состояние фильтра */
+/* Мобильные */
 
-.grade-entry-empty {
-  padding: 10px;
-  font-size: 13px;
-  color: #777;
-}
+@media (max-width: 768px) {
+  .grade-entry {
+    padding: 10px 10px 8px;
+  }
 
-/* Адаптив */
-
-@media (max-width: 900px) {
-  .grade-entry-header {
+  .grade-entry-row {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
   }
 
-  .grade-entry-date-block {
-    align-items: flex-start;
-  }
-
-  .grade-entry-count {
-    width: 100%;
-    text-align: left;
-    margin-left: 0;
+  .grade-entry-buttons {
+    justify-content: flex-end;
   }
 }
