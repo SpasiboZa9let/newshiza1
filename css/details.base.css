@@ -1,40 +1,24 @@
-/* Вся правая панель — стеклянная карточка */
+/* БАЗОВЫЙ СТЕКЛЯННЫЙ СТИЛЬ КАРТОЧКИ УЧЕНИКА */
 
-.details-shell {
+/* Вся карточка ученика */
+.details-content {
+  max-width: 100%;
   border-radius: var(--radius-xl);
   border: 1px solid var(--glass-border);
   background: var(--glass-bg-main);
-  backdrop-filter: blur(24px) saturate(150%);
-  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  backdrop-filter: blur(22px) saturate(150%);
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
   box-shadow: var(--glass-shadow-soft);
-  padding: 12px 14px 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  max-height: calc(100vh - 120px);
-  overflow: hidden;
+  padding: 14px 16px 16px;
 }
 
-.details-scroll {
-  overflow-y: auto;
-  padding-right: 4px;
-}
-
-.details-scroll::-webkit-scrollbar {
-  width: 6px;
-}
-.details-scroll::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.6);
-  border-radius: 999px;
-}
-
-/* Хедер ученика */
+/* Хедер с аватаркой и ФИО */
 
 .details-header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 8px;
+  gap: 16px;
+  margin-bottom: 12px;
 }
 
 .details-avatar {
@@ -53,58 +37,52 @@
   color: #111827;
 }
 
-.details-title-block {
+.details-header-main {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
 }
 
 .details-name {
   font-size: 16px;
   font-weight: 600;
+  color: var(--color-text-main);
 }
 
-.details-meta {
+.details-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
   font-size: 12px;
   color: var(--color-text-muted);
 }
 
-/* Теги-состояния (есть долги, есть пропуски, режим просмотра/админ и т.п.) */
-
-.details-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-left: auto;
-}
-
-.details-tag {
+.details-class {
   padding: 3px 8px;
   border-radius: 999px;
-  border: 1px solid rgba(148, 163, 184, 0.6);
-  background: rgba(248, 250, 252, 0.9);
-  font-size: 11px;
-  color: #0f172a;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  background: rgba(248, 250, 252, 0.95);
 }
+
+/* Теги “есть данные / есть долги” */
 
 .details-tag-muted {
-  border-color: rgba(209, 213, 219, 0.8);
-  color: #6b7280;
-}
-
-.details-tag-danger {
-  border-color: rgba(248, 113, 113, 0.9);
-  background: rgba(254, 226, 226, 0.95);
-  color: #991b1b;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(209, 213, 219, 0.9);
+  background: rgba(248, 250, 252, 0.95);
+  font-size: 11px;
+  color: var(--color-text-muted);
 }
 
 /* Сводка (средний балл, долги, пропуски) */
 
 .details-summary {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-  margin-bottom: 6px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 8px;
+  margin-bottom: 10px;
 }
 
 .details-summary-item {
@@ -112,51 +90,77 @@
   padding: 8px 10px;
   background: var(--glass-bg-soft);
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.7);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .details-summary-label {
   font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
   color: var(--color-text-muted);
-  margin-bottom: 2px;
 }
 
 .details-summary-value {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
+  color: var(--color-text-main);
 }
 
-/* Табы (оценки / пропуски / долги / заметки) */
+/* Табы (если используются для оценок/долгов/заметок) */
 
 .details-tabs {
-  display: flex;
-  gap: 4px;
-  margin: 4px 0 8px;
+  margin-top: 4px;
+  margin-bottom: 10px;
   padding: 3px;
   border-radius: 999px;
   background: rgba(248, 250, 252, 0.9);
   box-shadow: var(--glass-shadow-thin);
+  display: flex;
+  gap: 4px;
 }
 
-.details-tab {
+.details-tabs button {
   flex: 1 1 0;
   border-radius: 999px;
   border: none;
-  background: transparent;
   padding: 5px 8px;
   font-size: 12px;
   cursor: pointer;
+  background: transparent;
   color: #4b5563;
   transition: var(--transition-fast);
 }
 
-.details-tab--active {
-  background: linear-gradient(
-    135deg,
-    rgba(37, 99, 235, 0.98),
-    rgba(29, 78, 216, 0.95)
-  );
+.details-tabs button.details-tab--active {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
   color: #eff6ff;
   box-shadow:
     0 0 0 1px rgba(255, 255, 255, 0.95),
     0 8px 16px rgba(37, 99, 235, 0.45);
+}
+
+/* Контент таба */
+
+.details-tab-content {
+  font-size: 13px;
+}
+
+/* Placeholder “выберите ученика слева” */
+
+.placeholder {
+  padding: 20px 18px;
+  border-radius: var(--radius-xl);
+  border: 1px dashed rgba(148, 163, 184, 0.7);
+  background: rgba(255, 255, 255, 0.85);
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+/* Общий стиль «пусто» (если используется где-то ещё) */
+
+.empty {
+  font-size: 13px;
+  color: #777;
 }
