@@ -139,3 +139,40 @@ body {
   min-height: 100vh;
   box-sizing: border-box;
 }
+
+/* ========================= */
+/*  Dark mode (авто по ОС)   */
+/* ========================= */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --glass-bg-main: linear-gradient(
+      135deg,
+      rgba(15, 23, 42, 0.9),
+      rgba(30, 64, 175, 0.65)
+    );
+    --glass-bg-soft: linear-gradient(
+      145deg,
+      rgba(31, 41, 55, 0.9),
+      rgba(30, 64, 175, 0.5)
+    );
+    --glass-border: rgba(148, 163, 184, 0.7);
+    --glass-shadow-soft: 0 20px 45px rgba(0, 0, 0, 0.7);
+
+    --color-bg-main: radial-gradient(
+      circle at 0% 0%,
+      #020617 0,
+      #020617 35%,
+      #020617 100%
+    );
+    --color-text-main: #e5e7eb;
+    --color-text-muted: #9ca3af;
+    --color-accent: #60a5fa;
+    --color-accent-soft: #1d4ed8;
+  }
+
+  body {
+    background: var(--color-bg-main);
+    color: var(--color-text-main);
+  }
+}
