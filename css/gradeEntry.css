@@ -430,3 +430,17 @@
     background-color: transparent;
   }
 }
+
+/* FIX: вернуть внутреннюю прокрутку панели быстрого выставления */
+
+.grade-entry {
+  max-height: 420px;
+  overflow: auto;           /* именно auto, чтобы панель скроллилась внутри */
+  display: flex;
+  flex-direction: column;
+}
+
+/* список учеников внутри панели */
+.grade-entry-list {
+  padding: 6px 10px 10px;
+}
