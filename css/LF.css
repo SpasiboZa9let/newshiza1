@@ -167,7 +167,7 @@ body {
   background: var(--glass-bg-main);
   backdrop-filter: blur(22px);
   padding-bottom: 6px;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .grade-entry-header {
